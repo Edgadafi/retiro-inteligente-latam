@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "retiro-inteligente-latam": {
+      "command": "npm",
+      "args": ["run", "mcp", "-w", "backend"],
+      "env": {
+        "NODE_ENV": "development"
+      }
+    }
+  }
+}

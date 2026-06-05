@@ -1,0 +1,21 @@
+{
+  "name": "retiro-inteligente-latam",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Plataforma agéntica de ahorro previsional para trabajadores de la Gig Economy LATAM",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "concurrently -n backend,frontend -c blue,green \"npm run dev -w backend\" \"npm run dev -w frontend\"",
+    "build": "npm run build -w backend && npm run build -w frontend",
+    "lint": "npm run lint -w backend && npm run lint -w frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
