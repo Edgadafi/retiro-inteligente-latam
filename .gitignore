@@ -8,3 +8,5 @@ build/
 coverage/
 .wallets/
 backend/data/
+.vercel/
+.vercel
