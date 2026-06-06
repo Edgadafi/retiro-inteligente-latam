@@ -10,6 +10,7 @@
     "lint": "tsc --noEmit",
     "mcp": "tsx src/mcp/stdio.ts",
     "verify:supabase": "tsx scripts/verify-supabase.ts",
+    "verify:openai": "tsx scripts/verify-openai.ts",
     "db:apply-schema": "tsx scripts/apply-schema.ts"
   },
   "dependencies": {

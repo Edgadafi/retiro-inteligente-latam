@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { z } from "zod";
+import { env } from "../config/env.js";
 import { runAgentChat, listAgentTools } from "../services/agent-chat.service.js";
 import { getAgentConfig } from "../agent.js";
 

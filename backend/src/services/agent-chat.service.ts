@@ -7,6 +7,10 @@ import {
   toolHandlers,
   type ToolName,
 } from "../mcp/tools/handlers.js";
+import {
+  isOpenAIQuotaError,
+  runAgentChatSandbox,
+} from "./agent-chat-sandbox.service.js";
 
 const openaiTools: OpenAI.Chat.Completions.ChatCompletionTool[] = [
   {
@@ -151,8 +155,12 @@ export async function runAgentChat(params: {
   messages: ChatMessage[];
   userId?: string;
 }): Promise<AgentChatResponse> {
+  if (env.AGENT_CHAT_SANDBOX_MODE) {
+    return runAgentChatSandbox(params);
+  }
+
   if (!env.OPENAI_API_KEY) {
-    throw new Error("OPENAI_API_KEY requerida para el chat del agente.");
+    return runAgentChatSandbox(params);
   }
 
   const client = new OpenAI({ apiKey: env.OPENAI_API_KEY });
@@ -173,14 +181,23 @@ export async function runAgentChat(params: {
   const MAX_ITERATIONS = 6;
 
   for (let i = 0; i < MAX_ITERATIONS; i++) {
-    const completion = await client.chat.completions.create({
-      model: agentConfig.model.name,
-      temperature: agentConfig.model.temperature,
-      max_tokens: agentConfig.model.maxTokens,
-      messages: conversation,
-      tools: openaiTools,
-      tool_choice: "auto",
-    });
+    let completion: OpenAI.Chat.Completions.ChatCompletion;
+    try {
+      completion = await client.chat.completions.create({
+        model: env.OPENAI_MODEL,
+        temperature: agentConfig.model.temperature,
+        max_tokens: agentConfig.model.maxTokens,
+        messages: conversation,
+        tools: openaiTools,
+        tool_choice: "auto",
+      });
+    } catch (error) {
+      if (isOpenAIQuotaError(error)) {
+        console.warn("[Agent] OpenAI quota 429 — fallback a sandbox Rito");
+        return runAgentChatSandbox(params);
+      }
+      throw error;
+    }
 
     const choice = completion.choices[0];
     if (!choice?.message) {

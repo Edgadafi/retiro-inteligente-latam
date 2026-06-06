@@ -54,6 +54,16 @@ const envSchema = z.object({
   ARBITRUM_ONE_RPC_URL: optionalUrl,
 
   OPENAI_API_KEY: optionalString,
+  /** Modelo para chat del agente Rito (tool calling) */
+  OPENAI_MODEL: z.string().default("gpt-4o-mini"),
+
+  /** Chat Rito sin OpenAI (reglas + MCP) — útil si falta key o quota 429 */
+  AGENT_CHAT_SANDBOX_MODE: z
+    .preprocess(
+      (v) => (v === "true" || v === "1" ? true : v === "false" || v === "0" ? false : v),
+      z.boolean().optional(),
+    )
+    .optional(),
 
   /** Simula mint MXNB + compra CETES cuando faltan credenciales CDP/Etherfuse */
   ONCHAIN_SANDBOX_MODE: z
@@ -70,6 +80,8 @@ export const env = {
   ...parsed,
   CDP_API_KEY_NAME: parsed.CDP_API_KEY_NAME ?? parsed.CDP_API_KEY_ID,
   CDP_API_KEY_PRIVATE_KEY: parsed.CDP_API_KEY_PRIVATE_KEY ?? parsed.CDP_API_KEY_SECRET,
+  AGENT_CHAT_SANDBOX_MODE:
+    parsed.AGENT_CHAT_SANDBOX_MODE ?? !parsed.OPENAI_API_KEY,
   ONCHAIN_SANDBOX_MODE:
     parsed.ONCHAIN_SANDBOX_MODE ??
     (
@@ -84,7 +96,9 @@ export function getIntegrationStatus() {
     cdpAgent: Boolean(env.CDP_API_KEY_NAME && env.CDP_API_KEY_PRIVATE_KEY),
     juno: Boolean(parsed.JUNO_API_KEY),
     etherfuse: Boolean(parsed.ETHERFUSE_API_KEY),
-    openai: Boolean(parsed.OPENAI_API_KEY),
+    openai: Boolean(parsed.OPENAI_API_KEY) && !env.AGENT_CHAT_SANDBOX_MODE,
+    openaiKeyPresent: Boolean(parsed.OPENAI_API_KEY),
+    agentChatSandbox: env.AGENT_CHAT_SANDBOX_MODE,
     onchainSandbox: env.ONCHAIN_SANDBOX_MODE,
     networkId: parsed.NETWORK_ID,
   };
