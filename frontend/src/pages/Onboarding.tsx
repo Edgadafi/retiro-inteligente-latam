@@ -20,6 +20,7 @@ export function Onboarding() {
   const [plan, setPlan] = useState<OnboardingResponse | null>(null);
   const [depositUi, setDepositUi] = useState<DepositUiState | null>(null);
   const [activeFid, setActiveFid] = useState<string | null>(null);
+  const [depositAmount, setDepositAmount] = useState<number | undefined>();
   const [dbTest, setDbTest] = useState<DbConnectionResponse | null>(null);
   const [integrations, setIntegrations] = useState<Record<string, boolean | string> | null>(null);
   const [loading, setLoading] = useState(false);
@@ -74,14 +75,16 @@ export function Onboarding() {
     try {
       if (!plan) await handleOnboard();
       const result = await simulateSpeiDeposit(DEMO_USER, 150);
-      const { fid, ui } = result.data;
+      const { fid, ui, deposit } = result.data;
 
       setActiveFid(fid);
       setDepositUi(ui);
+      setDepositAmount(deposit.amountMxn);
 
       stopPollRef.current = pollDepositUntilSettled(fid, (data) => {
         setDepositUi(data.ui);
         setActiveFid(data.deposit.fid);
+        setDepositAmount(data.deposit.amountMxn);
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error");
@@ -157,7 +160,11 @@ export function Onboarding() {
 
       <ClabeCard plan={plan} loading={loading} onGenerate={handleOnboard} />
 
-      <DepositStatusStepper ui={depositUi} fid={activeFid ?? undefined} />
+      <DepositStatusStepper
+        ui={depositUi}
+        fid={activeFid ?? undefined}
+        amountMxn={depositAmount}
+      />
     </section>
   );
 }
