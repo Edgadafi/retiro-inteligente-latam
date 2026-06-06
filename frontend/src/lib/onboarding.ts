@@ -1,3 +1,5 @@
+import type { DepositUiState } from "./deposits";
+
 export interface SavingsPlan {
   userId: string;
   clabe: string;
@@ -20,16 +22,20 @@ export interface OnboardingResponse {
 }
 
 export interface DemoDepositResponse {
-  message: string;
-  deposit: {
+  status: "success";
+  data: {
     fid: string;
-    status: string;
-    amountMxn: number;
-    mxnbAmount?: number;
-    metadata?: Record<string, unknown>;
+    deposit: {
+      fid: string;
+      status: string;
+      amountMxn: number;
+      mxnbAmount?: number;
+      metadata?: Record<string, unknown>;
+    };
+    ui: DepositUiState;
+    pollUrl: string;
+    message: string;
   };
-  cetesInvested: boolean;
-  traceUrl: string;
 }
 
 export async function onboardUser(userId: string): Promise<OnboardingResponse> {
@@ -51,11 +57,11 @@ export async function simulateSpeiDeposit(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ userId, amountMxn }),
   });
+  const body = (await res.json()) as DemoDepositResponse & { error?: string };
   if (!res.ok) {
-    const err = (await res.json()) as { error?: string };
-    throw new Error(err.error ?? "Error en simulación SPEI");
+    throw new Error(body.error ?? "Error en simulación SPEI");
   }
-  return res.json() as Promise<DemoDepositResponse>;
+  return body;
 }
 
 export async function fetchHealth(): Promise<{

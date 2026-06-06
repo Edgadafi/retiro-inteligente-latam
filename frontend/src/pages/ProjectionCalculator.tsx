@@ -1,5 +1,9 @@
 import { useState } from "react";
+import { ClabeCard } from "../components/ClabeCard";
 import { fetchProjection, type ProjectionResult } from "../lib/projection";
+import { onboardUser, type OnboardingResponse } from "../lib/onboarding";
+
+const DEMO_USER = "demo-gig-worker-001";
 
 const fmt = (n: number) =>
   new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(n);
@@ -8,7 +12,9 @@ export function ProjectionCalculator() {
   const [daily, setDaily] = useState(50);
   const [years, setYears] = useState(20);
   const [result, setResult] = useState<ProjectionResult | null>(null);
+  const [plan, setPlan] = useState<OnboardingResponse | null>(null);
   const [loading, setLoading] = useState(false);
+  const [clabeLoading, setClabeLoading] = useState(false);
 
   async function calculate() {
     setLoading(true);
@@ -26,6 +32,18 @@ export function ProjectionCalculator() {
     }
   }
 
+  async function handleGenerateClabe() {
+    setClabeLoading(true);
+    try {
+      const onboard = await onboardUser(DEMO_USER);
+      setPlan(onboard);
+    } catch {
+      setPlan(null);
+    } finally {
+      setClabeLoading(false);
+    }
+  }
+
   return (
     <section className="space-y-6">
       <div>
@@ -34,6 +52,8 @@ export function ProjectionCalculator() {
           CETES tokenizados (~11%) vs AFORE promedio (~7.84%)
         </p>
       </div>
+
+      <ClabeCard plan={plan} loading={clabeLoading} onGenerate={handleGenerateClabe} />
 
       <div className="grid sm:grid-cols-2 gap-4">
         <label className="block space-y-2">

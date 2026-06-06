@@ -2,7 +2,8 @@ import type { Request, Response } from "express";
 import { z } from "zod";
 import { getUserByClabe } from "../services/savings-plan.service.js";
 import { depositRepository } from "../services/deposit.repository.js";
-import { settlementProcessor } from "../services/settlement-processor.service.js";
+import { scheduleDepositPipeline } from "../services/deposit-orchestrator.service.js";
+import { mapDepositToUi } from "../lib/deposit-ui-status.js";
 import { buildProviderAudit } from "../lib/observability/provider-audit.js";
 import type { BitsoFundingWebhookPayload } from "../types/webhook.types.js";
 import type { DepositStatus } from "../types/deposit.types.js";
@@ -32,9 +33,6 @@ const webhookSchema = z.object({
   }),
 });
 
-/** Procesamiento async para no bloquear el ACK del webhook SPEI */
-const inFlight = new Set<string>();
-
 function mapInitialStatus(
   event: BitsoFundingWebhookPayload["event"],
   payloadStatus: BitsoFundingWebhookPayload["payload"]["status"],
@@ -42,30 +40,6 @@ function mapInitialStatus(
   if (event === "funding.failed" || payloadStatus === "failed") return "failed";
   if (event === "funding.pending" || payloadStatus === "pending") return "pending";
   return "processing";
-}
-
-function scheduleSettlement(fid: string): void {
-  if (inFlight.has(fid)) return;
-  inFlight.add(fid);
-
-  void settlementProcessor
-    .processDeposit(fid)
-    .then((result) => {
-      console.info(
-        `[Payment] Settlement completado fid=${fid}`,
-        `| status=${result.deposit.status}`,
-        `| attempts=${result.attempts}`,
-      );
-    })
-    .catch((error) => {
-      console.error(
-        `[Payment] Settlement diferido fid=${fid}:`,
-        error instanceof Error ? error.message : error,
-      );
-    })
-    .finally(() => {
-      inFlight.delete(fid);
-    });
 }
 
 /**
@@ -116,7 +90,7 @@ export async function handleBitsoFundingWebhook(
       });
 
       if (existing.status === "pending" || existing.status === "processing") {
-        scheduleSettlement(payload.fid);
+        scheduleDepositPipeline(payload.fid);
       }
 
       res.status(200).json({
@@ -166,7 +140,7 @@ export async function handleBitsoFundingWebhook(
     });
 
     if (initialStatus !== "failed") {
-      scheduleSettlement(payload.fid);
+      scheduleDepositPipeline(payload.fid);
     } else {
       await depositRepository.transitionStatus(payload.fid, "failed", {
         lastError: `Webhook event=${event} status=${payload.status}`,
@@ -199,7 +173,15 @@ export async function getDepositStatus(req: Request, res: Response): Promise<voi
     }
 
     const stateLogs = await depositRepository.getStateLogs(fid);
-    res.json({ deposit, stateLogs });
+    const ui = mapDepositToUi(deposit.status);
+    res.json({
+      status: "success",
+      data: {
+        deposit,
+        ui,
+        stateLogs,
+      },
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Error desconocido";
     res.status(500).json({ error: message });
@@ -210,7 +192,7 @@ export async function retryDepositSettlement(req: Request, res: Response): Promi
   const fid = String(req.params.fid);
 
   try {
-    scheduleSettlement(fid);
+    scheduleDepositPipeline(fid);
     res.status(202).json({
       accepted: true,
       fid,

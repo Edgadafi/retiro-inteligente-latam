@@ -1,20 +1,37 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { ClabeCard } from "../components/ClabeCard";
+import { DepositStatusStepper } from "../components/DepositStatusStepper";
 import {
   onboardUser,
   simulateSpeiDeposit,
   fetchHealth,
   type OnboardingResponse,
-  type DemoDepositResponse,
 } from "../lib/onboarding";
+import {
+  testDbConnection,
+  pollDepositUntilSettled,
+  type DepositUiState,
+  type DbConnectionResponse,
+} from "../lib/deposits";
 
 const DEMO_USER = "demo-gig-worker-001";
 
 export function Onboarding() {
   const [plan, setPlan] = useState<OnboardingResponse | null>(null);
-  const [demo, setDemo] = useState<DemoDepositResponse | null>(null);
+  const [depositUi, setDepositUi] = useState<DepositUiState | null>(null);
+  const [activeFid, setActiveFid] = useState<string | null>(null);
+  const [dbTest, setDbTest] = useState<DbConnectionResponse | null>(null);
   const [integrations, setIntegrations] = useState<Record<string, boolean | string> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const stopPollRef = useRef<(() => void) | null>(null);
+
+  useEffect(() => {
+    return () => {
+      stopPollRef.current?.();
+    };
+  }, []);
 
   async function handleOnboard() {
     setLoading(true);
@@ -33,13 +50,39 @@ export function Onboarding() {
     }
   }
 
-  async function handleSimulate() {
+  async function handleTestDb() {
     setLoading(true);
     setError(null);
     try {
+      const result = await testDbConnection();
+      setDbTest(result);
+      if (result.status !== "success") {
+        setError(result.error ?? "Conexión DB fallida");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleSimulate() {
+    setLoading(true);
+    setError(null);
+    stopPollRef.current?.();
+
+    try {
       if (!plan) await handleOnboard();
       const result = await simulateSpeiDeposit(DEMO_USER, 150);
-      setDemo(result);
+      const { fid, ui } = result.data;
+
+      setActiveFid(fid);
+      setDepositUi(ui);
+
+      stopPollRef.current = pollDepositUntilSettled(fid, (data) => {
+        setDepositUi(data.ui);
+        setActiveFid(data.deposit.fid);
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error");
     } finally {
@@ -58,6 +101,13 @@ export function Onboarding() {
 
       <div className="flex flex-wrap gap-3">
         <button
+          onClick={handleTestDb}
+          disabled={loading}
+          className="border border-border hover:border-brand-500 px-5 py-3 rounded-lg text-sm disabled:opacity-50"
+        >
+          Test DB
+        </button>
+        <button
           onClick={handleOnboard}
           disabled={loading}
           className="bg-brand-700 hover:bg-brand-500 px-5 py-3 rounded-lg text-sm font-medium disabled:opacity-50"
@@ -72,6 +122,19 @@ export function Onboarding() {
           2. Simular depósito SPEI ($150)
         </button>
       </div>
+
+      {dbTest && (
+        <div
+          className={`text-sm px-4 py-3 rounded-lg border ${
+            dbTest.status === "success"
+              ? "border-brand-500/30 text-brand-500"
+              : "border-red-500/30 text-red-400"
+          }`}
+        >
+          DB: {dbTest.data.connection} · schema: {dbTest.data.db_schema} ·{" "}
+          {dbTest.data.timestamp}
+        </div>
+      )}
 
       {integrations && (
         <div className="flex flex-wrap gap-2 text-xs">
@@ -92,26 +155,9 @@ export function Onboarding() {
 
       {error && <p className="text-red-400 text-sm">{error}</p>}
 
-      {plan && (
-        <div className="bg-surface-elevated border border-border rounded-xl p-5 space-y-3">
-          <p className="text-xs text-neutral-500 uppercase">Tu CLABE SPEI</p>
-          <p className="text-2xl font-mono tracking-wider">{plan.plan.clabe}</p>
-          <p className="text-sm text-neutral-400">
-            Referencia: {plan.speiInstructions.reference} · Wallet: {plan.walletStatus}
-          </p>
-        </div>
-      )}
+      <ClabeCard plan={plan} loading={loading} onGenerate={handleOnboard} />
 
-      {demo && (
-        <div className="bg-surface-elevated border border-brand-500/30 rounded-xl p-5 space-y-2">
-          <p className="text-xs text-brand-500 uppercase">Flujo on-chain completado</p>
-          <p className="text-sm">
-            Estado: <strong>{demo.deposit.status}</strong> · CETES:{" "}
-            {demo.cetesInvested ? "✅ invertido" : "⏳ pendiente"}
-          </p>
-          <p className="text-xs text-neutral-500 font-mono">fid: {demo.deposit.fid}</p>
-        </div>
-      )}
+      <DepositStatusStepper ui={depositUi} fid={activeFid ?? undefined} />
     </section>
   );
 }

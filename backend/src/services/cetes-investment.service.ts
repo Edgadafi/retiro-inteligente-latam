@@ -212,3 +212,9 @@ export class CetesInvestmentService {
 }
 
 export const cetesInvestmentService = new CetesInvestmentService();
+
+/** Hook post-settlement: invoca purchase_stablebond vía agente MCP */
+export async function onDepositSettled(fid: string): Promise<CetesInvestmentResult> {
+  console.info(`[Agent] onDepositSettled → purchase_stablebond fid=${fid}`);
+  return cetesInvestmentService.investFromDeposit(fid);
+}

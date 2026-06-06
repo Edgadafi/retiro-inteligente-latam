@@ -4,7 +4,8 @@ import { randomUUID } from "node:crypto";
 import { env } from "../config/env.js";
 import { getOrCreateSavingsPlan } from "../services/savings-plan.service.js";
 import { depositRepository } from "../services/deposit.repository.js";
-import { settlementProcessor } from "../services/settlement-processor.service.js";
+import { scheduleDepositPipeline } from "../services/deposit-orchestrator.service.js";
+import { mapDepositToUi } from "../lib/deposit-ui-status.js";
 
 const simulateSchema = z.object({
   userId: z.string().min(1),
@@ -12,18 +13,18 @@ const simulateSchema = z.object({
 });
 
 /**
- * Simula depósito SPEI completo: pending → settled → invested (sandbox on-chain).
- * Solo disponible con ONCHAIN_SANDBOX_MODE o NODE_ENV=development.
+ * Simula depósito SPEI — responde inmediato en pending y procesa en background
+ * para que el frontend pueda hacer polling visual de estados.
  */
 export async function simulateSpeiDeposit(req: Request, res: Response): Promise<void> {
   if (!env.ONCHAIN_SANDBOX_MODE && env.NODE_ENV === "production") {
-    res.status(403).json({ error: "Demo deshabilitada en producción" });
+    res.status(403).json({ status: "error", error: "Demo deshabilitada en producción" });
     return;
   }
 
   const parsed = simulateSchema.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ error: "Payload inválido", details: parsed.error.flatten() });
+    res.status(400).json({ status: "error", error: "Payload inválido", details: parsed.error.flatten() });
     return;
   }
 
@@ -33,7 +34,7 @@ export async function simulateSpeiDeposit(req: Request, res: Response): Promise<
     const plan = await getOrCreateSavingsPlan(userId);
     const fid = `sandbox-${randomUUID()}`;
 
-    await depositRepository.create({
+    const deposit = await depositRepository.create({
       fid,
       userId,
       clabe: plan.clabe,
@@ -46,17 +47,23 @@ export async function simulateSpeiDeposit(req: Request, res: Response): Promise<
       },
     });
 
-    const result = await settlementProcessor.processDeposit(fid);
+    scheduleDepositPipeline(fid);
 
-    res.status(201).json({
-      message: "Flujo SPEI → MXNB → CETES simulado",
-      deposit: result.deposit,
-      cetesInvested: result.cetesInvested,
-      attempts: result.attempts,
-      traceUrl: `/api/deposits/${fid}`,
+    const ui = mapDepositToUi(deposit.status);
+
+    res.status(202).json({
+      status: "success",
+      data: {
+        fid,
+        deposit,
+        ui,
+        pollUrl: `/api/deposits/${fid}`,
+        message: "SPEI simulado — consulta pollUrl para estados en tiempo real",
+      },
     });
   } catch (error) {
     res.status(500).json({
+      status: "error",
       error: error instanceof Error ? error.message : "Error en simulación",
     });
   }

@@ -3,7 +3,7 @@ import type { JitterStrategy } from "../lib/retry/exponential-backoff.js";
 import { env } from "../config/env.js";
 import { junoService, JunoApiError } from "./juno.service.js";
 import { sandboxOnchainService } from "./sandbox-onchain.service.js";
-import { cetesInvestmentService } from "./cetes-investment.service.js";
+import { onDepositSettled } from "./cetes-investment.service.js";
 import { depositRepository } from "./deposit.repository.js";
 import { buildProviderAudit } from "../lib/observability/provider-audit.js";
 import type { DepositRecord } from "../types/deposit.types.js";
@@ -23,14 +23,14 @@ export class SettlementProcessor {
       return { deposit, attempts: 0, cetesInvested: true };
     }
 
-    if (deposit.status === "investing") {
-      const invested = await cetesInvestmentService.investFromDeposit(fid);
-      return { deposit: invested.deposit, attempts: 0, cetesInvested: true };
-    }
-
-    if (deposit.status === "settled") {
-      const invested = await cetesInvestmentService.investFromDeposit(fid);
-      return { deposit: invested.deposit, attempts: 0, cetesInvested: true };
+    if (deposit.status === "investing" || deposit.status === "settled") {
+      const invested = await onDepositSettled(fid);
+      const updated = await depositRepository.findByFid(fid);
+      return {
+        deposit: updated!,
+        attempts: 0,
+        cetesInvested: invested.deposit.status === "invested",
+      };
     }
 
     if (deposit.status === "failed") {
@@ -141,11 +141,11 @@ export class SettlementProcessor {
 
       let cetesInvested = false;
       try {
-        const investment = await cetesInvestmentService.investFromDeposit(fid);
+        const investment = await onDepositSettled(fid);
         cetesInvested = investment.deposit.status === "invested";
       } catch (error) {
         console.warn(
-          `[Settlement] CETES diferido fid=${fid}:`,
+          `[Settlement] purchase_stablebond diferido fid=${fid}:`,
           error instanceof Error ? error.message : error,
         );
       }

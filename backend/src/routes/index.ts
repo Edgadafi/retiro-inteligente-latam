@@ -7,8 +7,12 @@ import { getAgentConfig } from "../agent.js";
 import { getIntegrationStatus } from "../config/env.js";
 import { onboardingRouter } from "./onboarding.js";
 import { demoRouter } from "./demo.js";
+import { testDbConnection } from "../controllers/health.js";
 
 export const apiRouter = Router();
+
+apiRouter.get("/test-db-connection", testDbConnection);
+apiRouter.post("/test-db-connection", testDbConnection);
 
 apiRouter.get("/health", (_req, res) => {
   res.json({
