@@ -1,0 +1,101 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap");
+
+:root {
+  /* Tipografía */
+  --font-display: "DM Sans", sans-serif;
+  --font-mono: "DM Mono", monospace;
+
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+
+  /* Paleta — Azul petróleo */
+  --rito-night: #0b2a2e;
+  --rito-deep: #0d4a52;
+  --rito-ocean: #0e7a8a;
+  --rito-compass: #14a8bd;
+  --rito-mist: #7dd4df;
+  --rito-frost: #c8eff4;
+
+  /* Acento IA */
+  --rito-amber: #f2b84b;
+  --rito-amber-d: #c47d0e;
+
+  /* Neutro */
+  --rito-slate: #f7f9fa;
+
+  /* Superficies derivadas (dark mode app) */
+  --rito-surface-elevated: #0d3a40;
+  --rito-border: rgb(20 168 189 / 0.22);
+
+  /* Sistema */
+  --rito-error: #e24b4a;
+}
+
+/* Tipografía Rito */
+.rito-display-h1 {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-semibold);
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.rito-financial-data {
+  font-family: var(--font-mono);
+  font-weight: var(--font-weight-medium);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.rito-body-text {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-regular);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
+@media (min-width: 640px) {
+  .rito-body-text {
+    font-size: 1rem;
+  }
+}
+
+.rito-label {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-light);
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.rito-wordmark {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-semibold);
+}
+
+.rito-subtitle {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-light);
+  letter-spacing: 0.0625rem;
+}
+
+/* Pulso del núcleo IA (punto ámbar) */
+@keyframes rito-amber-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.65;
+    transform: scale(1.35);
+  }
+}
+
+.rito-compass-pulse {
+  animation: rito-amber-pulse 1.6s ease-in-out infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}

@@ -1,26 +1,45 @@
+@import "./styles/brand-tokens.css";
 @import "tailwindcss";
+@config "../tailwind.config.js";
 
 @theme {
-  --color-brand-50: #f0fdf4;
-  --color-brand-500: #22c55e;
-  --color-brand-700: #15803d;
-  --color-surface: #0a0a0a;
-  --color-surface-elevated: #141414;
-  --color-border: #262626;
-  --font-sans: "Inter", system-ui, sans-serif;
+  /* Rito — paleta de marca */
+  --color-rito-night: #0b2a2e;
+  --color-rito-deep: #0d4a52;
+  --color-rito-ocean: #0e7a8a;
+  --color-rito-compass: #14a8bd;
+  --color-rito-mist: #7dd4df;
+  --color-rito-frost: #c8eff4;
+  --color-rito-amber: #f2b84b;
+  --color-rito-amber-d: #c47d0e;
+  --color-rito-slate: #f7f9fa;
+  --color-rito-elevated: #0d3a40;
+  --color-rito-error: #e24b4a;
+
+  /* Alias legacy → Rito (compatibilidad con componentes existentes) */
+  --color-brand-50: #c8eff4;
+  --color-brand-500: #14a8bd;
+  --color-brand-700: #0e7a8a;
+  --color-surface: #0b2a2e;
+  --color-surface-elevated: #0d3a40;
+  --color-border: rgb(20 168 189 / 0.22);
+
+  --font-sans: "DM Sans", sans-serif;
+  --font-display: "DM Sans", sans-serif;
+  --font-mono: "DM Mono", monospace;
 }
 
 body {
-  @apply bg-surface text-white font-sans antialiased;
+  @apply bg-rito-night text-rito-frost font-sans antialiased;
 }
 
 @keyframes wow-glow-pulse {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgb(34 197 94 / 0%);
+    box-shadow: 0 0 0 0 rgb(20 168 189 / 0%);
   }
   50% {
-    box-shadow: 0 0 28px 6px rgb(34 197 94 / 0.28);
+    box-shadow: 0 0 28px 6px rgb(20 168 189 / 0.28);
   }
 }
 
