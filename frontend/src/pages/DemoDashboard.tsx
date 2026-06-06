@@ -3,6 +3,7 @@ import { AgentChat } from "./AgentChat";
 import { Onboarding } from "./Onboarding";
 import { ProjectionCalculator } from "./ProjectionCalculator";
 import { CompassIcon } from "../components/ui/CompassIcon";
+import { WalletLinkSection } from "../components/WalletLinkSection";
 
 interface Props {
   onBack: () => void;
@@ -32,6 +33,7 @@ export function DemoDashboard({ onBack }: Props) {
         </div>
 
         <Onboarding />
+        <WalletLinkSection userId="demo-gig-worker-001" />
         <ProjectionCalculator />
         <AgentChat />
       </div>

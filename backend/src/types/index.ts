@@ -5,6 +5,8 @@ export interface SavingsPlan {
   userId: string;
   clabe: string;
   walletAddress?: string;
+  linkedWalletAddress?: string;
+  linkedWalletVerifiedAt?: string;
   contributionAmount: number;
   contributionFrequency: "daily" | "weekly";
   targetYears: number;

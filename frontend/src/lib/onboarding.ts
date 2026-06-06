@@ -1,9 +1,11 @@
 import type { DepositUiState } from "./deposits";
+import type { OnboardingWallet } from "./wallet";
 
 export interface SavingsPlan {
   userId: string;
   clabe: string;
   walletAddress?: string;
+  linkedWalletAddress?: string;
   contributionAmount: number;
   contributionFrequency: "daily" | "weekly";
   targetYears: number;
@@ -14,6 +16,7 @@ export interface OnboardingResponse {
   plan: SavingsPlan;
   integrations: Record<string, boolean | string>;
   walletStatus: string;
+  wallet?: OnboardingWallet;
   speiInstructions: {
     clabe: string;
     beneficiary: string;

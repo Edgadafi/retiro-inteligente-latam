@@ -10,9 +10,14 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
+    "@rainbow-me/rainbowkit": "^2.2.11",
+    "@tanstack/react-query": "^5.101.0",
     "framer-motion": "^12.40.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "siwe": "^3.0.0",
+    "viem": "^2.52.2",
+    "wagmi": "^2.19.5"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.9",

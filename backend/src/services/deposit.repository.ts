@@ -252,6 +252,25 @@ export class DepositRepository {
     });
   }
 
+  async listByUserId(userId: string, limit = 20): Promise<DepositRecord[]> {
+    if (isSupabaseConfigured()) {
+      const { data, error } = await getSupabase()
+        .from("deposits")
+        .select("*")
+        .eq("user_id", userId)
+        .order("updated_at", { ascending: false })
+        .limit(limit);
+
+      if (error) throw new Error(`Supabase listByUserId: ${error.message}`);
+      return (data ?? []).map(rowToDeposit);
+    }
+
+    return [...memoryDeposits.values()]
+      .filter((d) => d.userId === userId)
+      .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+      .slice(0, limit);
+  }
+
   async listByStatus(statuses: DepositStatus[]): Promise<DepositRecord[]> {
     if (isSupabaseConfigured()) {
       const { data, error } = await getSupabase()

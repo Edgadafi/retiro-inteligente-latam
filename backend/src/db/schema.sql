@@ -70,6 +70,30 @@ CREATE TRIGGER savings_plans_updated_at
 
 ALTER TABLE savings_plans ENABLE ROW LEVEL SECURITY;
 
+-- Monedero agéntico CDP (export cifrado) + ledger TEE
+CREATE TABLE IF NOT EXISTS agent_secrets (
+  id                TEXT PRIMARY KEY,
+  encrypted_export  TEXT NOT NULL,
+  network_id        TEXT NOT NULL,
+  wallet_address    TEXT,
+  updated_at        TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS wallet_daily_spend (
+  wallet_key    TEXT NOT NULL,
+  spend_date    DATE NOT NULL,
+  amount_mxnb   NUMERIC(18, 6) NOT NULL DEFAULT 0,
+  updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (wallet_key, spend_date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_wallet_daily_spend_date ON wallet_daily_spend(spend_date);
+
+-- Wallet usuario vinculada (retiros — Fase 2)
+ALTER TABLE savings_plans
+  ADD COLUMN IF NOT EXISTS linked_wallet_address TEXT,
+  ADD COLUMN IF NOT EXISTS linked_wallet_verified_at TIMESTAMPTZ;
+
 CREATE INDEX IF NOT EXISTS idx_deposit_state_logs_fid ON deposit_state_logs(fid);
 CREATE INDEX IF NOT EXISTS idx_deposit_state_logs_metadata
   ON deposit_state_logs USING GIN (metadata);

@@ -7,6 +7,7 @@ import { getAgentConfig } from "../agent.js";
 import { getIntegrationStatus } from "../config/env.js";
 import { onboardingRouter } from "./onboarding.js";
 import { demoRouter } from "./demo.js";
+import { walletRouter } from "./wallet.js";
 import { testDbConnection } from "../controllers/health.js";
 
 export const apiRouter = Router();
@@ -61,6 +62,7 @@ apiRouter.get("/deposits/:fid", getDepositStatus);
 apiRouter.post("/deposits/:fid/retry", retryDepositSettlement);
 
 apiRouter.use("/onboarding", onboardingRouter);
+apiRouter.use("/wallet", walletRouter);
 apiRouter.use("/demo", demoRouter);
 apiRouter.use("/agent", agentRouter);
 apiRouter.use("/webhooks", webhooksRouter);

@@ -9,6 +9,12 @@ function rowToPlan(row: Record<string, unknown>): SavingsPlan {
     userId: String(row.user_id),
     clabe: String(row.clabe),
     walletAddress: row.wallet_address != null ? String(row.wallet_address) : undefined,
+    linkedWalletAddress:
+      row.linked_wallet_address != null ? String(row.linked_wallet_address) : undefined,
+    linkedWalletVerifiedAt:
+      row.linked_wallet_verified_at != null
+        ? String(row.linked_wallet_verified_at)
+        : undefined,
     contributionAmount: Number(row.contribution_amount),
     contributionFrequency: row.contribution_frequency as "daily" | "weekly",
     targetYears: Number(row.target_years),
@@ -53,6 +59,8 @@ export class SavingsPlanRepository {
             user_id: plan.userId,
             clabe: plan.clabe,
             wallet_address: plan.walletAddress ?? null,
+            linked_wallet_address: plan.linkedWalletAddress ?? null,
+            linked_wallet_verified_at: plan.linkedWalletVerifiedAt ?? null,
             contribution_amount: plan.contributionAmount,
             contribution_frequency: plan.contributionFrequency,
             target_years: plan.targetYears,

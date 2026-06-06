@@ -1,14 +1,14 @@
-import fs from "node:fs";
-import path from "node:path";
-import { CdpAgentkit } from "@coinbase/cdp-agentkit-core";
+import { CdpAgentkit, GetWalletDetailsAction } from "@coinbase/cdp-agentkit-core";
 import { agentConfig } from "./config/agent.config.js";
 import { CONTRACTS, DAILY_SPENDING_LIMIT_MXNB } from "./config/contracts.js";
 import { env } from "./config/env.js";
+import { encryptWallet } from "./lib/crypto/wallet-crypto.js";
 import {
-  decryptWallet,
-  encryptWallet,
-  isEncryptedWalletPayload,
-} from "./lib/crypto/wallet-crypto.js";
+  loadCachedWalletAddress,
+  loadWalletExport,
+  saveWalletExport,
+} from "./lib/wallet-persistence.js";
+import { extractWalletAddress } from "./lib/wallet-address.js";
 
 export interface AgentInitResult {
   agentkit: CdpAgentkit;
@@ -18,12 +18,6 @@ export interface AgentInitResult {
 
 let cachedAgent: AgentInitResult | null = null;
 
-function resolveWalletDataPath(): string {
-  return path.isAbsolute(env.AGENT_WALLET_DATA_PATH)
-    ? env.AGENT_WALLET_DATA_PATH
-    : path.resolve(process.cwd(), env.AGENT_WALLET_DATA_PATH);
-}
-
 function requireMasterKeyForProduction(): void {
   if (env.NODE_ENV === "production" && !env.WALLET_MASTER_KEY) {
     throw new Error(
@@ -32,55 +26,36 @@ function requireMasterKeyForProduction(): void {
   }
 }
 
-function loadPersistedWallet(): string | undefined {
-  const walletPath = resolveWalletDataPath();
-  if (!fs.existsSync(walletPath)) return undefined;
+async function resolveWalletAddress(
+  agentkit: CdpAgentkit,
+): Promise<string | undefined> {
+  const cached = await loadCachedWalletAddress();
+  if (cached) return cached;
 
-  const raw = fs.readFileSync(walletPath, "utf8");
-
-  if (isEncryptedWalletPayload(raw)) {
-    if (!env.WALLET_MASTER_KEY) {
-      throw new Error(
-        "Wallet cifrado detectado pero WALLET_MASTER_KEY no está configurada.",
-      );
-    }
-    return decryptWallet(raw, env.WALLET_MASTER_KEY);
-  }
-
-  if (env.NODE_ENV === "production") {
-    throw new Error(
-      "Wallet en texto plano detectado en producción. Migra con WALLET_MASTER_KEY activa.",
-    );
-  }
-
-  console.warn(
-    "[Agent] Wallet sin cifrar en disco — aceptable solo en desarrollo. " +
-      "Define WALLET_MASTER_KEY antes de producción/KMS.",
-  );
-  return raw;
+  const action = new GetWalletDetailsAction();
+  const result = await agentkit.run(action, {} as never);
+  return extractWalletAddress(result);
 }
 
-async function persistWallet(agentkit: CdpAgentkit): Promise<void> {
+async function persistWallet(
+  agentkit: CdpAgentkit,
+  walletAddress?: string,
+): Promise<void> {
   requireMasterKeyForProduction();
 
-  const walletPath = resolveWalletDataPath();
-  const dir = path.dirname(walletPath);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-
   const exported = await agentkit.exportWallet();
-
   const payload = env.WALLET_MASTER_KEY
     ? encryptWallet(exported, env.WALLET_MASTER_KEY)
     : exported;
 
-  fs.writeFileSync(walletPath, payload, { encoding: "utf8", mode: 0o600 });
+  await saveWalletExport(payload, {
+    networkId: env.NETWORK_ID,
+    walletAddress,
+  });
 }
 
 /**
  * Valida políticas TEE antes de ejecutar acciones on-chain vía el agente.
- * El LLM nunca accede a la seed; solo invoca herramientas MCP que pasan por aquí.
  */
 export function enforceTeePolicy(params: {
   toAddress: string;
@@ -107,7 +82,7 @@ export function enforceTeePolicy(params: {
 }
 
 /**
- * Inicializa el proveedor del monedero agéntico CDP con persistencia cifrada.
+ * Inicializa el monedero agéntico CDP con persistencia cifrada (disco o Supabase).
  */
 export async function initializeAgentWallet(): Promise<AgentInitResult> {
   if (cachedAgent) return cachedAgent;
@@ -122,7 +97,7 @@ export async function initializeAgentWallet(): Promise<AgentInitResult> {
   }
 
   requireMasterKeyForProduction();
-  const persistedWallet = loadPersistedWallet();
+  const persistedWallet = await loadWalletExport();
 
   const agentkit = await CdpAgentkit.configureWithWallet({
     cdpApiKeyName: apiKeyName,
@@ -133,20 +108,27 @@ export async function initializeAgentWallet(): Promise<AgentInitResult> {
     sourceVersion: agentConfig.version,
   });
 
-  await persistWallet(agentkit);
+  const walletAddress = await resolveWalletAddress(agentkit);
+  await persistWallet(agentkit, walletAddress);
 
   cachedAgent = {
     agentkit,
     networkId: env.NETWORK_ID,
+    walletAddress,
   };
 
   console.info(
     `[Agent] Monedero agéntico inicializado en ${env.NETWORK_ID}`,
+    walletAddress ? `| ${walletAddress}` : "",
     `| MXNB Sepolia: ${CONTRACTS.arbitrumSepolia.mxnb.proxy}`,
     `| Límite diario: ${DAILY_SPENDING_LIMIT_MXNB} MXNB`,
     `| Persistencia: ${env.WALLET_MASTER_KEY ? "cifrada AES-256-GCM" : "dev sin cifrar"}`,
   );
 
+  return cachedAgent;
+}
+
+export function getCachedAgentWallet(): AgentInitResult | null {
   return cachedAgent;
 }
 

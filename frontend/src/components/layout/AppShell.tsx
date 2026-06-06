@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { CompassIcon } from "../ui/CompassIcon";
 import { BodyText, DisplayH1, RitoLabel } from "../ui/RitoTypography";
 
@@ -36,9 +37,16 @@ export function AppShell({ children }: AppShellProps) {
               </BodyText>
             </div>
           </div>
-          <span className="shrink-0 text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 rounded-full border border-rito-ocean/40 text-rito-compass font-display font-medium">
-            MVP · Fase 1
-          </span>
+          <div className="shrink-0 flex items-center gap-2">
+            <ConnectButton
+              chainStatus="none"
+              showBalance={false}
+              accountStatus="avatar"
+            />
+            <span className="hidden sm:inline text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 rounded-full border border-rito-ocean/40 text-rito-compass font-display font-medium">
+              MVP · Fase 2
+            </span>
+          </div>
         </div>
       </header>
       <main className="flex-1 px-4 py-6 sm:px-6 sm:py-10">

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ClabeCard } from "../components/ClabeCard";
 import { DepositStatusStepper } from "../components/DepositStatusStepper";
+import { WalletPanel } from "../components/WalletPanel";
 import {
   onboardUser,
   simulateSpeiDeposit,
@@ -159,6 +160,10 @@ export function Onboarding() {
       {error && <p className="text-red-400 text-sm">{error}</p>}
 
       <ClabeCard plan={plan} loading={loading} onGenerate={handleOnboard} />
+
+      {plan && (
+        <WalletPanel userId={DEMO_USER} initialWallet={plan.wallet} />
+      )}
 
       <DepositStatusStepper
         ui={depositUi}

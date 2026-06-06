@@ -1,8 +1,10 @@
 import type { Request, Response } from "express";
 import { z } from "zod";
 import { getOrCreateSavingsPlan, getSavingsPlan, updateSavingsPlan } from "../services/savings-plan.service.js";
-import { getIntegrationStatus } from "../config/env.js";
+import { env, getIntegrationStatus } from "../config/env.js";
 import { initializeAgentWallet } from "../agent.js";
+import { resolveAgentWalletAddress } from "../services/wallet.service.js";
+import { sandboxWalletAddressForUser } from "../lib/wallet-address.js";
 
 const onboardSchema = z.object({
   userId: z.string().min(1),
@@ -24,24 +26,46 @@ export async function postOnboarding(req: Request, res: Response): Promise<void>
 
     const { userId, ...updates } = parsed.data;
     const hasUpdates = Object.values(updates).some((v) => v !== undefined);
-    const finalPlan = hasUpdates
+    let finalPlan = hasUpdates
       ? (await updateSavingsPlan(userId, updates)) ?? plan
       : plan;
 
-    let walletStatus = "pending_cdp";
-    try {
-      if (getIntegrationStatus().cdpAgent) {
-        await initializeAgentWallet();
-        walletStatus = "agent_wallet_ready";
-      }
-    } catch {
+    let walletStatus: "pending_cdp" | "agent_wallet_ready" | "sandbox" = "pending_cdp";
+    let wallet: { address: string; networkId: string; mode: "agent" | "sandbox" };
+
+    if (env.ONCHAIN_SANDBOX_MODE || !getIntegrationStatus().cdpAgent) {
       walletStatus = "sandbox";
+      const address = sandboxWalletAddressForUser(userId);
+      wallet = { address, networkId: env.NETWORK_ID, mode: "sandbox" };
+      if (!finalPlan.walletAddress) {
+        finalPlan =
+          (await updateSavingsPlan(userId, { walletAddress: address })) ?? finalPlan;
+      }
+    } else {
+      try {
+        await initializeAgentWallet();
+        const resolved = await resolveAgentWalletAddress();
+        walletStatus = "agent_wallet_ready";
+        wallet = resolved;
+        if (!finalPlan.walletAddress || finalPlan.walletAddress !== resolved.address) {
+          finalPlan =
+            (await updateSavingsPlan(userId, { walletAddress: resolved.address })) ??
+            finalPlan;
+        }
+      } catch {
+        walletStatus = "sandbox";
+        const address = sandboxWalletAddressForUser(userId);
+        wallet = { address, networkId: env.NETWORK_ID, mode: "sandbox" };
+        finalPlan =
+          (await updateSavingsPlan(userId, { walletAddress: address })) ?? finalPlan;
+      }
     }
 
     res.status(201).json({
       plan: finalPlan,
       integrations: getIntegrationStatus(),
       walletStatus,
+      wallet,
       speiInstructions: {
         clabe: finalPlan.clabe,
         beneficiary: "Retiro Inteligente LATAM",

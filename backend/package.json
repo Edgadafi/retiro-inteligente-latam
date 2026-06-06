@@ -11,6 +11,7 @@
     "mcp": "tsx src/mcp/stdio.ts",
     "verify:supabase": "tsx scripts/verify-supabase.ts",
     "verify:openai": "tsx scripts/verify-openai.ts",
+    "verify:wallet": "tsx scripts/verify-wallet.ts",
     "db:apply-schema": "tsx scripts/apply-schema.ts"
   },
   "dependencies": {
@@ -23,6 +24,7 @@
     "helmet": "^8.0.0",
     "openai": "^6.42.0",
     "pg": "^8.21.0",
+    "siwe": "^3.0.0",
     "zod": "^3.24.2"
   },
   "devDependencies": {

@@ -32,7 +32,7 @@ export async function handleGetWalletDetails(): Promise<ToolResult> {
   try {
     const agentkit = await getAgentkit();
     const result = await agentkit.run(walletDetailsAction, {} as never);
-    const spending = getSpendingSummary("default-wallet");
+    const spending = await getSpendingSummary("default-wallet");
     return {
       success: true,
       data: { wallet: result, teeSpending: spending },
@@ -65,10 +65,11 @@ export async function handleTransfer(args: {
     const walletKey = "default-wallet";
     const amount = args.amount;
 
+    const dailySpent = await getDailySpentMxnb(walletKey);
     enforceTeePolicy({
       toAddress: args.destination,
       amountMxnb: amount,
-      dailySpentMxnb: getDailySpentMxnb(walletKey),
+      dailySpentMxnb: dailySpent,
     });
 
     const agentkit = await getAgentkit();
@@ -79,13 +80,13 @@ export async function handleTransfer(args: {
       gasless: args.gasless ?? false,
     } as never);
 
-    recordSpend(walletKey, amount);
+    await recordSpend(walletKey, amount);
 
     return {
       success: true,
       data: {
         transfer: result,
-        spending: getSpendingSummary(walletKey),
+        spending: await getSpendingSummary(walletKey),
       },
     };
   } catch (error) {
@@ -111,27 +112,28 @@ export async function handlePurchaseStablebond(args: {
 }): Promise<ToolResult> {
   try {
     const walletKey = args.walletAddress ?? "default-wallet";
+    const dailySpent = await getDailySpentMxnb(walletKey);
 
     enforceTeePolicy({
       toAddress: CONTRACTS.arbitrumOne.cetes.address,
       amountMxnb: args.amountMxnb,
-      dailySpentMxnb: getDailySpentMxnb(walletKey),
+      dailySpentMxnb: dailySpent,
     });
 
     const order = await etherfuseService.purchaseStablebond({
       quoteId: args.quoteId,
       amountMxnb: args.amountMxnb,
       walletAddress: walletKey,
-      dailySpentMxnb: getDailySpentMxnb(walletKey),
+      dailySpentMxnb: dailySpent,
     });
 
-    recordSpend(walletKey, args.amountMxnb);
+    await recordSpend(walletKey, args.amountMxnb);
 
     return {
       success: true,
       data: {
         order,
-        spending: getSpendingSummary(walletKey),
+        spending: await getSpendingSummary(walletKey),
       },
     };
   } catch (error) {
