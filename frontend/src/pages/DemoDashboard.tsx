@@ -18,7 +18,7 @@ export function DemoDashboard({ onBack }: Props) {
             <div>
               <p className="font-display font-semibold text-rito-frost">Demo en vivo</p>
               <p className="text-xs text-rito-mist">
-                Onboarding → proyección → agente LidIA
+                Onboarding → proyección → agente Rito
               </p>
             </div>
           </div>

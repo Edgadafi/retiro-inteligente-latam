@@ -7,7 +7,7 @@ const NODES = [
   { id: "webhook", label: "Juno Webhook", sub: "Bitso Business", layer: "payin" },
   { id: "db", label: "Supabase", sub: "deposits + logs", layer: "data" },
   { id: "recon", label: "Reconciliador", sub: "polling 60s", layer: "backend" },
-  { id: "agent", label: "LidIA + MCP", sub: "CDP AgentKit", layer: "ai" },
+  { id: "agent", label: "Rito + MCP", sub: "CDP AgentKit", layer: "ai" },
   { id: "chain", label: "Arbitrum", sub: "MXNB → CETES", layer: "onchain" },
 ] as const;
 
