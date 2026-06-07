@@ -4,11 +4,12 @@
 
 Proyecto para **Ethereum México 2026** (AI & Agentic Finance)
 
-Rito es una infraestructura de ahorro automatizado diseñada para la gig economy. Mediante un agente de IA autónomo (LidIA) y la integración con Etherfuse en Arbitrum, convertimos flujos de efectivo informales (SPEI) en bonos soberanos tokenizados (CETES) sin que el usuario toque cripto.
+Rito es una infraestructura de ahorro automatizado diseñada para la gig economy. Mediante un agente de IA autónomo (**Rito**) y la integración con Etherfuse en Arbitrum, convertimos flujos de efectivo informales (SPEI) en bonos soberanos tokenizados (CETES) sin que el usuario toque cripto.
 
 🚀 **Demo en vivo:** [retiro-inteligente-latam.vercel.app](https://retiro-inteligente-latam.vercel.app)
 
-📐 **Arquitectura y diagramas:** [ARCHITECTURE.md](./ARCHITECTURE.md)
+📐 **Arquitectura y diagramas:** [ARCHITECTURE.md](./ARCHITECTURE.md)  
+📋 **FAQ hackathon:** [docs/FAQ.md](./docs/FAQ.md)
 
 ## 🧠 Arquitectura del Agente
 

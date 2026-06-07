@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArchitectureView } from "../components/landing/ArchitectureView";
+import { FaqSection } from "../components/landing/FaqSection";
 import { DemoModal } from "../components/landing/DemoModal";
 import { FloatingDemoButton } from "../components/landing/FloatingDemoButton";
 import { HackathonModeToggle } from "../components/landing/HackathonModeToggle";
@@ -51,6 +52,7 @@ export function LandingPage({ onStartDemo }: Props) {
             transition={{ duration: 0.35 }}
           >
             <ArchitectureView />
+            <FaqSection />
             <div className="px-4 pb-16 text-center">
               <button
                 type="button"
