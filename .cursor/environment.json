@@ -1,0 +1,15 @@
+{
+  "name": "Rito · Retiro Inteligente LATAM",
+  "install": "npm install && ([ -f .env ] || cp .env.example .env)",
+  "terminals": [
+    {
+      "name": "dev",
+      "command": "npm run dev",
+      "description": "Backend Express API (:3001) + frontend Vite dev server (:5173) via concurrently. Runs in sandbox mode without external credentials."
+    }
+  ],
+  "ports": [
+    { "name": "backend api", "port": 3001 },
+    { "name": "frontend", "port": 5173 }
+  ]
+}
