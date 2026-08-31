@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap");
 
 :root {
   /* Tipografía */
@@ -98,4 +98,44 @@
   animation: rito-amber-pulse 1.6s ease-in-out infinite;
   transform-origin: center;
   transform-box: fill-box;
+}
+
+/* Rita — capa de marca (no reemplaza --rito-*) */
+.rita-root {
+  --rita-night: #0f172a;
+  --rita-card: #222735;
+  --rita-muted: #272f42;
+  --rita-border: #334155;
+  --rita-amber: #f59e0b;
+  --rita-amber-d: #d97706;
+  --rita-gold: #fbbf24;
+  --rita-frost: #f8fafc;
+  --rita-mist: #94a3b8;
+  --rita-error: #ef4444;
+  --font-rita: "IBM Plex Sans", "DM Sans", sans-serif;
+  font-family: var(--font-rita);
+  background-color: var(--rita-night);
+  color: var(--rita-frost);
+}
+
+.rita-root button,
+.rita-root a,
+.rita-root [role="button"] {
+  cursor: pointer;
+}
+
+.rita-root button:focus-visible,
+.rita-root a:focus-visible,
+.rita-root input:focus-visible {
+  outline: 2px solid var(--rita-amber);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rito-compass-pulse,
+  .wow-glow,
+  .wow-pop,
+  .wow-slide-up {
+    animation: none !important;
+  }
 }

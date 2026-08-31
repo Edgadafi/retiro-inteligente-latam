@@ -10,3 +10,7 @@ coverage/
 backend/data/
 .vercel/
 .vercel
+
+.cursor/skills/**/__pycache__/
+*.pyc
+
