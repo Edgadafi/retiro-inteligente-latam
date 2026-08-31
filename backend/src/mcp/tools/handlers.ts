@@ -6,7 +6,7 @@ import {
 import { enforceTeePolicy, getAgentkit } from "../../agent.js";
 import { CONTRACTS } from "../../config/contracts.js";
 import { etherfuseService } from "../../services/etherfuse.service.js";
-import { compareWithAfore, projectRetirementFund } from "../../services/projection.service.js";
+import { compareWithAfore, projectGenderGap, projectRetirementFund } from "../../services/projection.service.js";
 import {
   getOrCreateSavingsPlan,
   getSavingsPlan,
@@ -154,7 +154,7 @@ export async function handleProjectRetirementFund(args: {
       frequency: args.frequency ?? "daily",
       annualRate: args.annualRate,
     });
-    return { success: true, data: compareWithAfore(projection) };
+    return { success: true, data: compareWithAfore(projection, args.frequency ?? "daily") };
   } catch (error) {
     return toolError(error);
   }
@@ -197,6 +197,21 @@ export async function handleUpdateSavingsPlan(args: {
   }
 }
 
+export async function handleProjectGenderGap(args: {
+  currentAge: number;
+  weeklyContribution: number;
+  carePauseYears?: number;
+  horizonYears?: number;
+  wageGapFactor?: number;
+  annualRate?: number;
+}): Promise<ToolResult> {
+  try {
+    return { success: true, data: projectGenderGap(args) };
+  } catch (error) {
+    return toolError(error);
+  }
+}
+
 export const toolHandlers = {
   get_wallet_details: handleGetWalletDetails,
   get_balance: handleGetBalance,
@@ -204,6 +219,7 @@ export const toolHandlers = {
   quote_stablebond: handleQuoteStablebond,
   purchase_stablebond: handlePurchaseStablebond,
   project_retirement_fund: handleProjectRetirementFund,
+  project_gender_gap: handleProjectGenderGap,
   get_savings_plan: handleGetSavingsPlan,
   update_savings_plan: handleUpdateSavingsPlan,
 } as const;

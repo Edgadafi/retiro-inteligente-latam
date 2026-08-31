@@ -114,6 +114,38 @@ export function registerRetiroTools(server: McpServer): void {
   );
 
   server.registerTool(
+    "project_gender_gap",
+    {
+      title: "Proyectar brecha pensional de género",
+      description:
+        "Estima la brecha de retiro para mujeres: pausas por cuidados, brecha salarial y mayor longevidad. Compara contra un contrafactual de carrera continua. Es educativo, no una pensión.",
+      inputSchema: {
+        currentAge: z.number().min(18).max(80).describe("Edad actual"),
+        weeklyContribution: z.number().positive().describe("Aportación semanal MXN"),
+        carePauseYears: z
+          .number()
+          .min(0)
+          .optional()
+          .describe("Años de pausa por cuidados (0 si ninguna)"),
+        horizonYears: z
+          .number()
+          .positive()
+          .optional()
+          .describe("Años de ahorro hasta el retiro (default 65 - edad)"),
+        wageGapFactor: z
+          .number()
+          .min(0)
+          .max(0.5)
+          .optional()
+          .describe("Brecha salarial (default 0.16)"),
+        annualRate: z.number().optional().describe("Tasa anual override CETES"),
+      },
+      annotations: { readOnlyHint: true },
+    },
+    async (args) => runTool("project_gender_gap", args),
+  );
+
+  server.registerTool(
     "get_savings_plan",
     {
       title: "Obtener plan de ahorro",

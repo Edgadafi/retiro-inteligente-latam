@@ -23,3 +23,12 @@ export const CONTRACTS = {
 export const ANNUAL_CETES_YIELD = 0.11;
 export const ANNUAL_AFORE_YIELD = 0.0784;
 export const DAILY_SPENDING_LIMIT_MXNB = 500;
+
+/** Defaults educativos para la brecha pensional de género (INEGI/CONSAR/IMCO, redondeados). */
+export const GENDER_GAP_DEFAULTS = {
+  femaleLifeExpectancyYears: 78,
+  maleLifeExpectancyYears: 72,
+  retirementAge: 65,
+  /** Brecha salarial aproximada; la aportación contrafactual masculina es contribution / (1 - wageGap). */
+  wageGapFactor: 0.16,
+} as const;

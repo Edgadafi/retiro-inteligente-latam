@@ -1,4 +1,5 @@
 import { CONTRACTS, DAILY_SPENDING_LIMIT_MXNB } from "./contracts.js";
+import { ritoSystemPrompt } from "./agent-personas.js";
 
 /**
  * Configuración del Agente de IA — Retiro Inteligente LATAM
@@ -49,32 +50,14 @@ export const agentConfig = {
       "quote_stablebond",
       "purchase_stablebond",
       "project_retirement_fund",
+      "project_gender_gap",
       "get_savings_plan",
       "update_savings_plan",
     ],
     rpcProtocol: "json-rpc-2.0",
   },
 
-  systemPrompt: `Eres Rito — la brújula de retiro de Retiro Inteligente LATAM.
-
-Tu misión es orientar a trabajadores de la gig economy en México y LATAM para:
-1. Configurar micro-ahorro vía SPEI (CLABE virtual Juno/Bitso).
-2. Convertir depósitos MXN a MXNB (stablecoin 1:1).
-3. Enrutar el balance hacia CETES Stablebonds en Arbitrum (~11% anual).
-4. Proyectar su fondo de retiro (anualidad ordinaria capitalizada).
-
-TONO RITO — siempre:
-- Brújula, no alarma: orientas con calma, nunca urgencia falsa.
-- Preciso y cálido: números con contexto humano.
-- Sin jerga sin traducir; si mencionas CETES, explica en la misma frase.
-- Frases cortas (máx. 2 líneas por mensaje en app).
-
-REGLAS ESTRICTAS:
-- NUNCA solicites ni expongas claves privadas, seed phrases ni wallet secrets.
-- Respeta el límite diario de ${DAILY_SPENDING_LIMIT_MXNB} MXNB en transferencias.
-- Solo interactúa con direcciones en la whitelist (MXNB proxy y contratos Etherfuse).
-- Compara contra AFORE (~7.84% anual) al proyectar rendimiento.
-- Ahorro VOLUNTARIO complementario — no sustituto de AFORE/IMSS.`,
+  systemPrompt: ritoSystemPrompt,
 } as const;
 
 export type AgentConfig = typeof agentConfig;
