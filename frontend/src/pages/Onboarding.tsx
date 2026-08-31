@@ -15,9 +15,13 @@ import {
   type DbConnectionResponse,
 } from "../lib/deposits";
 
-const DEMO_USER = "demo-gig-worker-001";
+const DEFAULT_userId = "demo-gig-worker-001";
 
-export function Onboarding() {
+interface OnboardingProps {
+  userId?: string;
+}
+
+export function Onboarding({ userId = DEFAULT_userId }: OnboardingProps) {
   const [plan, setPlan] = useState<OnboardingResponse | null>(null);
   const [depositUi, setDepositUi] = useState<DepositUiState | null>(null);
   const [activeFid, setActiveFid] = useState<string | null>(null);
@@ -40,7 +44,7 @@ export function Onboarding() {
     setError(null);
     try {
       const [onboard, health] = await Promise.all([
-        onboardUser(DEMO_USER),
+        onboardUser(userId),
         fetchHealth(),
       ]);
       setPlan(onboard);
@@ -75,7 +79,7 @@ export function Onboarding() {
 
     try {
       if (!plan) await handleOnboard();
-      const result = await simulateSpeiDeposit(DEMO_USER, 150);
+      const result = await simulateSpeiDeposit(userId, 150);
       const { fid, ui, deposit } = result.data;
 
       setActiveFid(fid);
@@ -162,7 +166,7 @@ export function Onboarding() {
       <ClabeCard plan={plan} loading={loading} onGenerate={handleOnboard} />
 
       {plan && (
-        <WalletPanel userId={DEMO_USER} initialWallet={plan.wallet} />
+        <WalletPanel userId={userId} initialWallet={plan.wallet} />
       )}
 
       <DepositStatusStepper

@@ -9,7 +9,8 @@ Rito es una infraestructura de ahorro automatizado diseñada para la gig economy
 🚀 **Demo en vivo:** [retiro-inteligente-latam.vercel.app](https://retiro-inteligente-latam.vercel.app)
 
 📐 **Arquitectura y diagramas:** [ARCHITECTURE.md](./ARCHITECTURE.md)  
-📋 **FAQ hackathon:** [docs/FAQ.md](./docs/FAQ.md)
+📋 **FAQ hackathon:** [docs/FAQ.md](./docs/FAQ.md)  
+**Rita (mujeres):** [docs/unlock-summit-2026.md](./docs/unlock-summit-2026.md) · demo `/?view=rita`
 
 ## 🧠 Arquitectura del Agente
 
@@ -45,9 +46,10 @@ Base URL local: `http://localhost:3001/api`
 | `POST` | `/wallet/link` | Vincular wallet usuario (SIWE) |
 | `POST` | `/wallet/withdraw` | Solicitar retiro (stub) |
 | `POST` | `/projection` | Proyección de retiro CETES vs AFORE |
+| `POST` | `/projection/gender-gap` | Brecha pensional de género (Rita) |
 | `GET` | `/agent/config` | Políticas TEE + metadata MCP (sin secretos) |
 | `GET` | `/agent/tools` | Lista de herramientas MCP disponibles |
-| `POST` | `/agent/chat` | Chat con Rito (OpenAI o sandbox) |
+| `POST` | `/agent/chat` | Chat con Rito o Rita (`persona`) |
 | `POST` | `/webhooks/bitso/funding` | Webhook SPEI Bitso/Juno (producción) |
 
 ## 💡 ¿Por qué Rito?
