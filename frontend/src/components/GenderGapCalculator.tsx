@@ -7,6 +7,7 @@ import {
   RitoLabel,
 } from "../components/ui/RitoTypography";
 import { fetchGenderGap, type GenderGapResult } from "../lib/projection";
+import { AUREO, type ProjectionCurrency } from "../lib/partners";
 
 const fmt = (n: number) =>
   new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(n);
@@ -15,9 +16,13 @@ export function GenderGapCalculator() {
   const [age, setAge] = useState(32);
   const [weekly, setWeekly] = useState(200);
   const [pauseYears, setPauseYears] = useState(3);
+  const [currency, setCurrency] = useState<ProjectionCurrency>("MXN");
   const [result, setResult] = useState<GenderGapResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  /** docs/rita-soul.md §2: el CTA de Aureo se habilita al proyectar en MXN. */
+  const aureoEnabled = currency === "MXN";
 
   async function calculate() {
     setLoading(true);
@@ -87,6 +92,35 @@ export function GenderGapCalculator() {
         </label>
       </div>
 
+      <fieldset className="space-y-2">
+        <legend className="rito-label text-rita-mist">
+          Moneda de proyección para tu reserva Bitcoin
+        </legend>
+        <div className="flex gap-2" role="radiogroup" aria-label="Moneda de proyección">
+          {(["MXN", "BTC"] as const).map((c) => (
+            <button
+              key={c}
+              type="button"
+              role="radio"
+              aria-checked={currency === c}
+              onClick={() => setCurrency(c)}
+              className={`cursor-pointer px-4 py-2 rounded-xl border text-sm font-display transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rita-amber ${
+                currency === c
+                  ? "border-rita-amber bg-rita-amber text-rita-night font-semibold"
+                  : "border-rita-border text-rita-mist hover:border-rita-amber/50"
+              }`}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
+        <BodyText className="text-rita-mist !text-xs">
+          {aureoEnabled
+            ? "Aportas en pesos por SPEI y recibes Bitcoin en tu propia wallet."
+            : "No proyectamos el precio de Bitcoin. Tu reserva se mide por lo que acumulas, no por un rendimiento estimado."}
+        </BodyText>
+      </fieldset>
+
       <button
         type="button"
         onClick={() => void calculate()}
@@ -136,6 +170,44 @@ export function GenderGapCalculator() {
             {fmt(result.annualDrawdownRita)} vs {fmt(result.annualDrawdownCounterfactual)}{" "}
             (brecha de ingreso {fmt(result.incomeGapMxn)}/año). {result.disclaimer}
           </p>
+
+          <div className="bg-rita-card border border-rita-border rounded-xl p-4 sm:p-5 space-y-3">
+            <div>
+              <RitoLabel className="text-rita-mist block">Reserva de largo plazo</RitoLabel>
+              <BodyText className="text-rita-mist !text-sm mt-1">
+                Tu reserva en Bitcoin se construye con {AUREO.name}: aportas por SPEI y el Bitcoin
+                llega a tu propia wallet (no custodial). Comisión escalonada según monto; consulta
+                las tarifas vigentes en su sitio.
+              </BodyText>
+            </div>
+            {aureoEnabled ? (
+              <a
+                href={AUREO.appUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="cursor-pointer inline-flex items-center gap-2 bg-rita-amber hover:bg-rita-amber-d text-rita-night font-display font-semibold px-5 py-3 rounded-xl transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rita-gold"
+              >
+                Comprar Bitcoin con {AUREO.name}
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  aria-hidden="true"
+                >
+                  <path d="M7 17 17 7M17 7H9M17 7v8" />
+                </svg>
+              </a>
+            ) : (
+              <p className="text-rita-mist text-xs">
+                Selecciona <span className="text-rita-gold">MXN</span> como moneda de proyección
+                para continuar con {AUREO.name}.
+              </p>
+            )}
+          </div>
         </div>
       )}
     </section>

@@ -1,5 +1,6 @@
 import { executeTool, formatToolResult } from "../mcp/tools/handlers.js";
 import { resolvePersona, type AgentPersona } from "../config/agent-personas.js";
+import { AUREO } from "../config/partners.js";
 import type { AgentChatResponse, ChatMessage } from "./agent-chat.service.js";
 
 const fmt = (n: number) =>
@@ -193,8 +194,8 @@ function ritaCannedResponse(last: string): string | null {
     return "Si tributas en RESICO, tienes tasas preferenciales de ISR (1% a 2.5%), pero ese régimen no permite deducciones personales anuales como los PPR del Art. 151 de la LISR. En Sueldos y Salarios o Servicios Profesionales, las aportaciones a planes de retiro sí pueden reducir tu base gravable. En ambos casos, la reserva de largo plazo funciona como resguardo patrimonial, independientemente de tu esquema fiscal. Para tu caso puntual conviene validarlo con un contador.";
   }
 
-  if (has("pasar a bitcoin", "comprar bitcoin", "quiero bitcoin", "reserva en bitcoin", "mi bitcoin")) {
-    return "La reserva soberana en Bitcoin es la capa de largo plazo de retirobtc.mx. Lo que está automatizado en este canal es tu aportación por SPEI, la conversión a MXNB y el resguardo en CETES; yo no ejecuto compras ni movimientos de dinero. Si quieres avanzar hacia la reserva de largo plazo, te contacto con el equipo en contacto@retirobtc.mx.";
+  if (has("pasar a bitcoin", "comprar bitcoin", "quiero bitcoin", "reserva en bitcoin", "mi bitcoin", "aureo")) {
+    return `Tu reserva de largo plazo se construye con ${AUREO.name} (${AUREO.siteUrl}), una plataforma mexicana no custodial: el Bitcoin llega directo a tu wallet, no se queda en la plataforma. El camino es: creas tu cuenta y verificas identidad, registras tu dirección de Bitcoin, y Aureo te asigna una CLABE permanente; cada aportación por SPEI se convierte en Bitcoin automáticamente. Cobran una comisión escalonada según el monto — consulta las tarifas vigentes en su sitio. Yo te guío, pero la compra y la custodia quedan en tus manos.`;
   }
 
   if (has("volatilidad", "cayó", "cayo", "bajó bitcoin", "se desplomó", "perdí", "riesgoso")) {
