@@ -1,6 +1,11 @@
 import OpenAI from "openai";
 import { agentConfig } from "../config/agent.config.js";
-import { getPersonaPrompt, resolvePersona, type AgentPersona } from "../config/agent-personas.js";
+import {
+  getPersonaPrompt,
+  isToolAllowedForPersona,
+  resolvePersona,
+  type AgentPersona,
+} from "../config/agent-personas.js";
 import { env } from "../config/env.js";
 import {
   executeTool,
@@ -190,6 +195,9 @@ export async function runAgentChat(params: {
   const client = new OpenAI({ apiKey: env.OPENAI_API_KEY });
   const toolCallsLog: Array<{ name: string; result: string }> = [];
   const systemPrompt = getPersonaPrompt(persona);
+  const personaTools = openaiTools.filter(
+    (t) => t.type === "function" && isToolAllowedForPersona(persona, t.function.name),
+  );
 
   const systemWithUser = params.userId
     ? `${systemPrompt}\n\nUsuario activo: ${params.userId}`
@@ -213,7 +221,7 @@ export async function runAgentChat(params: {
         temperature: agentConfig.model.temperature,
         max_tokens: agentConfig.model.maxTokens,
         messages: conversation,
-        tools: openaiTools,
+        tools: personaTools,
         tool_choice: "auto",
       });
     } catch (error) {
@@ -256,8 +264,12 @@ export async function runAgentChat(params: {
         args.createIfMissing = true;
       }
 
-      const result =
-        name in toolHandlers
+      const result = !isToolAllowedForPersona(persona, name)
+        ? {
+            success: false,
+            error: `La persona ${persona} no tiene permitida la herramienta ${name}.`,
+          }
+        : name in toolHandlers
           ? await executeTool(name, args)
           : { success: false, error: `Tool no registrada: ${name}` };
 

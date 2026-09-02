@@ -1,4 +1,5 @@
 import { DAILY_SPENDING_LIMIT_MXNB } from "./contracts.js";
+import { RITA_SOUL_SYSTEM_PROMPT, RITA_SOUL_VERSION } from "./soul.js";
 
 export const AGENT_PERSONAS = ["rito", "rita"] as const;
 export type AgentPersona = (typeof AGENT_PERSONAS)[number];
@@ -31,26 +32,23 @@ TONO RITO — siempre:
 - Frases cortas (máx. 2 líneas por mensaje en app).
 ${SHARED_RULES}`;
 
-export const ritaSystemPrompt = `Eres Rita — la brújula de retiro para mujeres en México, de Retiro Inteligente LATAM.
+/** Ver docs/rita-soul.md §10.4 — el prompt vive en soul.ts, no se duplica aquí. */
+export const ritaSystemPrompt = RITA_SOUL_SYSTEM_PROMPT;
 
-Tu misión es orientar a mujeres (formales, informales, gig y del hogar) para:
-1. Entender su brecha pensional de género (pausas por cuidados, menor densidad de cotización, mayor longevidad).
-2. Configurar micro-ahorro vía SPEI (CLABE virtual) sin pedirles que “aprendan cripto”.
-3. Convertir depósitos MXN a MXNB (1:1) y enrutarlos a CETES Stablebonds (~11% anual).
-4. Proyectar el fondo con interrupciones de carrera y el extra semanal para cerrar la brecha.
-5. Explicar Modalidad 40 y semanas cotizadas en lenguaje claro, sin sustituir asesoría legal.
-
-TONO RITA — siempre:
-- Brújula, no alarma: orientas con calma; el retiro no es un fallo personal.
-- Preciso y cálido: números con contexto de cuidados, no de “disciplina”.
-- Sin jerga sin traducir; si mencionas CETES, SPEI o AFORE, explica en la misma frase.
-- Frases cortas (máx. 2 líneas por mensaje en app).
-- Nunca minimices el trabajo de cuidados ni presiones a “ponerse al corriente” con culpa.
-
-HERRAMIENTAS:
-- Usa project_gender_gap cuando hablen de brecha, pausa, maternidad, cuidados o “cuánto me falta”.
-- Usa project_retirement_fund para una proyección simple CETES vs AFORE.
-${SHARED_RULES}`;
+/**
+ * Tools permitidas por persona.
+ * SOUL.md §2 y §6.9: Rita calcula y explica, no opera — sin `transfer`
+ * ni `purchase_stablebond`, que mueven dinero en nombre de la usuaria.
+ */
+const RITA_TOOLS = [
+  "get_wallet_details",
+  "get_balance",
+  "quote_stablebond",
+  "project_retirement_fund",
+  "project_gender_gap",
+  "get_savings_plan",
+  "update_savings_plan",
+] as const;
 
 export const personaMeta = {
   rito: {
@@ -58,13 +56,27 @@ export const personaMeta = {
     displayName: "Rito",
     tagline: "Brújula de retiro",
     systemPrompt: ritoSystemPrompt,
+    /** null = sin restricción; hereda la lista de agentConfig.mcp.tools */
+    allowedTools: null,
   },
   rita: {
-    id: "rita",
+    id: "rita-retirobtc",
     displayName: "Rita",
-    tagline: "Retiro para mujeres",
+    role: "Asistente Digital de Retiro Soberano con Bitcoin",
+    tagline: "Retiro soberano para mujeres",
+    soulVersion: RITA_SOUL_VERSION,
     systemPrompt: ritaSystemPrompt,
+    allowedTools: RITA_TOOLS,
   },
+} as const;
+
+/** Contrato declarado en docs/rita-soul.md §10.4. */
+export const ritaPersona = {
+  id: personaMeta.rita.id,
+  name: personaMeta.rita.displayName,
+  role: personaMeta.rita.role,
+  systemInstruction: RITA_SOUL_SYSTEM_PROMPT,
+  temperature: 0.3,
 } as const;
 
 export function resolvePersona(value?: string): AgentPersona {
@@ -73,4 +85,14 @@ export function resolvePersona(value?: string): AgentPersona {
 
 export function getPersonaPrompt(persona?: string): string {
   return personaMeta[resolvePersona(persona)].systemPrompt;
+}
+
+/** Devuelve la allowlist de tools, o null si la persona no restringe ninguna. */
+export function getPersonaAllowedTools(persona?: string): readonly string[] | null {
+  return personaMeta[resolvePersona(persona)].allowedTools;
+}
+
+export function isToolAllowedForPersona(persona: string | undefined, tool: string): boolean {
+  const allowed = getPersonaAllowedTools(persona);
+  return allowed === null || allowed.includes(tool);
 }
