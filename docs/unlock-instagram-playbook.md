@@ -4,6 +4,8 @@ Cuenta: **marca Rita**. Objetivo: conversación sobre cómo viven las mujeres el
 
 Rita no publica desde el agente. Una humana copia, adapta al caption y pega.
 
+Voz y límites: [rita-soul.md](./rita-soul.md).
+
 ## Guardrails
 
 - Solo posts de Unlock que presenten a una **exponente o panelista**. No stories genéricas, no descuentos de boletos, no Guerra de Pitches.

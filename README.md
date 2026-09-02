@@ -10,7 +10,7 @@ Rito es una infraestructura de ahorro automatizado diseñada para la gig economy
 
 📐 **Arquitectura y diagramas:** [ARCHITECTURE.md](./ARCHITECTURE.md)  
 📋 **FAQ hackathon:** [docs/FAQ.md](./docs/FAQ.md)  
-**Rita (mujeres):** [docs/unlock-summit-2026.md](./docs/unlock-summit-2026.md) · demo `/?view=rita`
+**Rita (mujeres):** [docs/rita-soul.md](./docs/rita-soul.md) (voz) · [docs/unlock-summit-2026.md](./docs/unlock-summit-2026.md) · demo `/?view=rita`
 
 ## 🧠 Arquitectura del Agente
 
