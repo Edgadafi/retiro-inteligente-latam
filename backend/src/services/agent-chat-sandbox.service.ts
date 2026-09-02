@@ -193,6 +193,10 @@ function ritaCannedResponse(last: string): string | null {
     return "Si tributas en RESICO, tienes tasas preferenciales de ISR (1% a 2.5%), pero ese régimen no permite deducciones personales anuales como los PPR del Art. 151 de la LISR. En Sueldos y Salarios o Servicios Profesionales, las aportaciones a planes de retiro sí pueden reducir tu base gravable. En ambos casos, la reserva de largo plazo funciona como resguardo patrimonial, independientemente de tu esquema fiscal. Para tu caso puntual conviene validarlo con un contador.";
   }
 
+  if (has("pasar a bitcoin", "comprar bitcoin", "quiero bitcoin", "reserva en bitcoin", "mi bitcoin")) {
+    return "La reserva soberana en Bitcoin es la capa de largo plazo de retirobtc.mx. Lo que está automatizado en este canal es tu aportación por SPEI, la conversión a MXNB y el resguardo en CETES; yo no ejecuto compras ni movimientos de dinero. Si quieres avanzar hacia la reserva de largo plazo, te contacto con el equipo en contacto@retirobtc.mx.";
+  }
+
   if (has("volatilidad", "cayó", "cayo", "bajó bitcoin", "se desplomó", "perdí", "riesgoso")) {
     return "Las fluctuaciones marcadas de precio en periodos cortos son habituales en el mercado de Bitcoin. El ahorro para el retiro no se mide en días o meses, sino en ciclos de 10, 15 o 20 años. Si tu estrategia combina estabilidad de corto plazo en CETES con una reserva soberana de largo plazo, los movimientos diarios no alteran la meta de preservar tu poder adquisitivo.";
   }

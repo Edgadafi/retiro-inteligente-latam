@@ -12,6 +12,8 @@ Rito es una infraestructura de ahorro automatizado diseñada para la gig economy
 📋 **FAQ hackathon:** [docs/FAQ.md](./docs/FAQ.md)  
 **Rita (mujeres):** [docs/rita-soul.md](./docs/rita-soul.md) (voz) · [docs/unlock-summit-2026.md](./docs/unlock-summit-2026.md) · demo `/?view=rita`
 
+> **Arquitectura de producto:** este repositorio es la línea **MXNB/CETES** de la plataforma **retirobtc.mx**, y aquí vive la **capa agéntica de Rita** (SPEI → MXNB → CETES + proyección de brecha). La reserva Bitcoin de largo plazo es nivel plataforma y no se ejecuta desde esta capa.
+
 ## 🧠 Arquitectura del Agente
 
 - **Pay-in:** Procesamiento de SPEI mediante CLABE virtual.
