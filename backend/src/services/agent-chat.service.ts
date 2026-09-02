@@ -17,6 +17,7 @@ import {
   isOpenAIQuotaError,
   runAgentChatSandbox,
 } from "./agent-chat-sandbox.service.js";
+import { applyPersonaOutputPolicy } from "./persona-output-policy.js";
 
 const openaiTools: OpenAI.Chat.Completions.ChatCompletionTool[] = [
   {
@@ -242,7 +243,7 @@ export async function runAgentChat(params: {
     const toolCalls = choice.message.tool_calls;
     if (!toolCalls?.length) {
       return {
-        message: choice.message.content ?? "",
+        message: applyPersonaOutputPolicy(persona, choice.message.content ?? ""),
         toolCalls: toolCallsLog.length ? toolCallsLog : undefined,
       };
     }

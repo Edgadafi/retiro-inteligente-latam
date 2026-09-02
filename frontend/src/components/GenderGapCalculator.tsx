@@ -7,7 +7,7 @@ import {
   RitoLabel,
 } from "../components/ui/RitoTypography";
 import { fetchGenderGap, type GenderGapResult } from "../lib/projection";
-import { AUREO, type ProjectionCurrency } from "../lib/partners";
+import { AUREO, buildAureoUrl, type ProjectionCurrency } from "../lib/partners";
 
 const fmt = (n: number) =>
   new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(n);
@@ -182,7 +182,7 @@ export function GenderGapCalculator() {
             </div>
             {aureoEnabled ? (
               <a
-                href={AUREO.appUrl}
+                href={buildAureoUrl("calculadora-brecha")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="cursor-pointer inline-flex items-center gap-2 bg-rita-amber hover:bg-rita-amber-d text-rita-night font-display font-semibold px-5 py-3 rounded-xl transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rita-gold"

@@ -4,13 +4,17 @@
  */
 export const AUREO = {
   name: "Aureo",
-  siteUrl: process.env.AUREO_SITE_URL ?? "https://www.aureobitcoin.com",
-  appUrl: process.env.AUREO_APP_URL ?? "https://app.aureobitcoin.com",
   /** No custodial: el BTC se envía a la wallet de la usuaria, no queda en la plataforma. */
   custody: "no-custodial",
   /** Comisión escalonada por monto. No se fijan porcentajes aquí: cambian y se verifican en Aureo. */
   feeModel: "escalonada por monto de operación",
   requiresKyc: true,
+  /**
+   * Único punto de entrada: el CTA de la calculadora (docs/rita-soul.md §2).
+   * La URL vive en el frontend a propósito — Rita NO la comparte en el chat,
+   * porque un enlace suelto se salta la calculadora y pierde la atribución.
+   */
+  entryPoint: "CTA de la calculadora, con moneda de proyección en MXN",
 } as const;
 
 /** Pasos que Rita puede describir sin inventar funcionalidad. */

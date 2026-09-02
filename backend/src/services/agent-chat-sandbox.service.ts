@@ -195,7 +195,7 @@ function ritaCannedResponse(last: string): string | null {
   }
 
   if (has("pasar a bitcoin", "comprar bitcoin", "quiero bitcoin", "reserva en bitcoin", "mi bitcoin", "aureo")) {
-    return `Tu reserva de largo plazo se construye con ${AUREO.name} (${AUREO.siteUrl}), una plataforma mexicana no custodial: el Bitcoin llega directo a tu wallet, no se queda en la plataforma. El camino es: creas tu cuenta y verificas identidad, registras tu dirección de Bitcoin, y Aureo te asigna una CLABE permanente; cada aportación por SPEI se convierte en Bitcoin automáticamente. Cobran una comisión escalonada según el monto — consulta las tarifas vigentes en su sitio. Yo te guío, pero la compra y la custodia quedan en tus manos.`;
+    return `Tu reserva de largo plazo se construye con ${AUREO.name}, una plataforma mexicana no custodial: el Bitcoin llega directo a tu wallet, no se queda en la plataforma. Para empezar, calcula tu brecha aquí arriba y selecciona MXN como moneda de proyección; ahí se habilita el enlace para continuar con ${AUREO.name}. Desde ese enlace creas tu cuenta, verificas identidad, registras tu dirección de Bitcoin y recibes una CLABE permanente para aportar por SPEI. Cobran comisión escalonada según el monto. Yo te guío; la compra y la custodia quedan en tus manos.`;
   }
 
   if (has("volatilidad", "cayó", "cayo", "bajó bitcoin", "se desplomó", "perdí", "riesgoso")) {
