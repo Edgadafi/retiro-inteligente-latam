@@ -4,15 +4,34 @@ import { BodyText, DisplayH1, RitoLabel } from "../components/ui/RitoTypography"
 import { sendAgentMessage, type ChatMessage } from "../lib/agent";
 import { fetchHealth } from "../lib/onboarding";
 
-const DEMO_USER = "demo-gig-worker-001";
-
 const STARTERS = [
   "¿Cuánto tendría si ahorro $50 diarios por 20 años?",
   "¿Qué son los CETES y por qué rinden más que mi AFORE?",
   "¿Cómo funciona mi CLABE para depositar por SPEI?",
 ];
 
-export function AgentChat() {
+interface AgentChatProps {
+  persona?: "rito" | "rita";
+  userId?: string;
+  title?: string;
+  subtitle?: string;
+  starters?: string[];
+}
+
+export function AgentChat({
+  persona = "rito",
+  userId = "demo-gig-worker-001",
+  title,
+  subtitle,
+  starters = STARTERS,
+}: AgentChatProps) {
+  const displayName = persona === "rita" ? "Rita" : "Rito";
+  const heading = title ?? `${displayName} — tu copiloto`;
+  const blurb =
+    subtitle ??
+    (persona === "rita"
+      ? "Chat con Rita: brecha pensional, pausas por cuidados y ahorro vía SPEI. El monedero sigue en TEE."
+      : "Chat con OpenAI + herramientas MCP. Tu monedero sigue protegido en TEE.");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -42,7 +61,7 @@ export function AgentChat() {
     setError(null);
 
     try {
-      const res = await sendAgentMessage(next, DEMO_USER);
+      const res = await sendAgentMessage(next, userId, persona);
       setMessages([...next, { role: "assistant", content: res.message }]);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error desconocido");
@@ -61,17 +80,17 @@ export function AgentChat() {
         <CompassIcon size={40} variant="dark" pulse={loading} className="shrink-0" />
         <div className="flex-1 min-w-0">
           <DisplayH1 as="h2" className="text-rito-frost !text-xl sm:!text-2xl">
-            Rito — tu copiloto
+            {heading}
           </DisplayH1>
           <BodyText className="text-rito-mist !text-sm mt-1">
-            Chat con OpenAI + herramientas MCP. Tu monedero sigue protegido en TEE.
+            {blurb}
           </BodyText>
           {chatMode === "openai" && (
             <p className="text-rito-compass text-xs mt-2">OpenAI conectado · GPT + tools MCP</p>
           )}
           {chatMode === "sandbox" && (
             <p className="text-rito-amber text-xs mt-2">
-              Modo demo sandbox — Rito responde sin OpenAI (quota 429 o AGENT_CHAT_SANDBOX_MODE)
+              Modo demo sandbox — {displayName} responde sin OpenAI (quota 429 o AGENT_CHAT_SANDBOX_MODE)
             </p>
           )}
           {chatMode === "offline" && (
@@ -86,15 +105,18 @@ export function AgentChat() {
         {messages.length === 0 && (
           <div className="space-y-3">
             <p className="text-rito-mist text-sm">
-              Hola — soy Rito. Pregúntame sobre tu retiro, CETES o tu plan de ahorro.
+              Hola — soy {displayName}.{" "}
+              {persona === "rita"
+                ? "Pregúntame sobre tu brecha, una pausa por cuidados o tu plan de ahorro."
+                : "Pregúntame sobre tu retiro, CETES o tu plan de ahorro."}
             </p>
             <div className="flex flex-wrap gap-2">
-              {STARTERS.map((s) => (
+              {starters.map((s) => (
                 <button
                   key={s}
                   type="button"
                   onClick={() => sendStarter(s)}
-                  className="text-xs text-left px-3 py-2 rounded-lg border border-rito-ocean/30 text-rito-compass hover:border-rito-ocean/60 transition-colors"
+                  className="cursor-pointer text-xs text-left px-3 py-2 rounded-lg border border-rito-ocean/30 text-rito-compass hover:border-rito-ocean/60 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rito-amber"
                 >
                   {s}
                 </button>
@@ -108,7 +130,7 @@ export function AgentChat() {
             className={`text-sm ${m.role === "user" ? "text-rito-frost" : "text-rito-mist"}`}
           >
             <RitoLabel className="text-rito-compass/70 mr-2 !inline !normal-case">
-              {m.role === "user" ? "Tú" : "Rito"}
+              {m.role === "user" ? "Tú" : displayName}
             </RitoLabel>
             {m.content}
           </div>
@@ -134,7 +156,7 @@ export function AgentChat() {
         <button
           type="submit"
           disabled={loading || chatMode === "offline"}
-          className="bg-rito-ocean hover:bg-rito-compass text-rito-slate font-display font-medium px-5 py-3 rounded-xl text-sm disabled:opacity-50"
+          className="cursor-pointer bg-rito-ocean hover:bg-rito-compass text-rito-slate font-display font-medium px-5 py-3 rounded-xl text-sm disabled:opacity-50 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rito-amber"
         >
           Enviar
         </button>

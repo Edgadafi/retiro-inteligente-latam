@@ -2,7 +2,7 @@ import { Router } from "express";
 import { webhooksRouter } from "./webhooks.js";
 import { agentRouter } from "./agent.js";
 import { getDepositStatus, retryDepositSettlement } from "../controllers/payment.js";
-import { compareWithAfore, projectRetirementFund } from "../services/projection.service.js";
+import { compareWithAfore, projectGenderGap, projectRetirementFund } from "../services/projection.service.js";
 import { getAgentConfig } from "../agent.js";
 import { getIntegrationStatus } from "../config/env.js";
 import { onboardingRouter } from "./onboarding.js";
@@ -55,7 +55,46 @@ apiRouter.post("/projection", (req, res) => {
     annualRate,
   });
 
-  res.json(compareWithAfore(projection));
+  res.json(compareWithAfore(projection, frequency ?? "daily"));
+});
+
+apiRouter.post("/projection/gender-gap", (req, res) => {
+  const {
+    currentAge,
+    weeklyContribution,
+    carePauseYears,
+    horizonYears,
+    wageGapFactor,
+    annualRate,
+  } = req.body as {
+    currentAge?: number;
+    weeklyContribution?: number;
+    carePauseYears?: number;
+    horizonYears?: number;
+    wageGapFactor?: number;
+    annualRate?: number;
+  };
+
+  if (!currentAge || !weeklyContribution) {
+    res.status(400).json({ error: "currentAge y weeklyContribution son requeridos" });
+    return;
+  }
+
+  try {
+    res.json(
+      projectGenderGap({
+        currentAge,
+        weeklyContribution,
+        carePauseYears,
+        horizonYears,
+        wageGapFactor,
+        annualRate,
+      }),
+    );
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Error de proyección";
+    res.status(400).json({ error: message });
+  }
 });
 
 apiRouter.get("/deposits/:fid", getDepositStatus);

@@ -1,8 +1,8 @@
 import type { Request, Response } from "express";
 import { z } from "zod";
-import { env } from "../config/env.js";
 import { runAgentChat, listAgentTools } from "../services/agent-chat.service.js";
 import { getAgentConfig } from "../agent.js";
+import { resolvePersona } from "../config/agent-personas.js";
 
 const chatSchema = z.object({
   messages: z
@@ -14,6 +14,7 @@ const chatSchema = z.object({
     )
     .min(1),
   userId: z.string().optional(),
+  persona: z.enum(["rito", "rita"]).optional(),
 });
 
 export async function postAgentChat(req: Request, res: Response): Promise<void> {
@@ -24,7 +25,10 @@ export async function postAgentChat(req: Request, res: Response): Promise<void> 
   }
 
   try {
-    const result = await runAgentChat(parsed.data);
+    const result = await runAgentChat({
+      ...parsed.data,
+      persona: resolvePersona(parsed.data.persona),
+    });
     res.json(result);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Error del agente";

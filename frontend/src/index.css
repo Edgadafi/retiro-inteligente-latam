@@ -16,6 +16,18 @@
   --color-rito-elevated: #0d3a40;
   --color-rito-error: #e24b4a;
 
+  /* Rita — tokens paralelos */
+  --color-rita-night: #0f172a;
+  --color-rita-card: #222735;
+  --color-rita-muted: #272f42;
+  --color-rita-border: #334155;
+  --color-rita-amber: #f59e0b;
+  --color-rita-amber-d: #d97706;
+  --color-rita-gold: #fbbf24;
+  --color-rita-frost: #f8fafc;
+  --color-rita-mist: #94a3b8;
+  --color-rita-error: #ef4444;
+
   /* Alias legacy → Rito (compatibilidad con componentes existentes) */
   --color-brand-50: #c8eff4;
   --color-brand-500: #14a8bd;
