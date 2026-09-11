@@ -13,7 +13,7 @@ el repositorio que sirve `retirobtc.mx`. Renombra la identidad visible de la
 asistente y deja intacta la fontanería interna.
 
 - 23 archivos, +62 / −59
-- SHA-256: `468079f6339fe1dbe7694b8bd688404972c7082e7ba09a2f31a1a51af9e2db71`
+- SHA-256: `926cecdb0146908bd4e4c8fb0b2473d0da456c2a764fbc8be31dc43c7c479b6f`
 
 ## Cómo aplicarlo
 
@@ -47,6 +47,22 @@ de actualizar una marca.
 
 El widget mantiene `window.Rito` como alias de `window.Rita` para no romper
 embeds externos.
+
+## Verificación
+
+`widget-alias.test.mjs` comprueba lo anterior sobre el widget ya parcheado:
+que la identidad visible diga Rita, que `window.Rito` siga apuntando a
+`window.Rita`, que `window.Rito.open()` abra el panel de verdad y que los ids
+`#rito-*` y la clave `rito_session` sigan intactos.
+
+```sh
+npm install --no-save jsdom
+node widget-alias.test.mjs <ruta-al-repo>/agents/public/widget/rito.js
+```
+
+Los ocho casos deben pasar. Este test detectó que una pasada de renombrado
+sobre prosa había convertido `window.Rito = window.Rita` en una autoasignación,
+eliminando el alias; conviene volver a correrlo si se reescribe el widget.
 
 ## Después de desplegar
 

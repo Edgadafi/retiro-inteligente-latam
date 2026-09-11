@@ -1,4 +1,4 @@
-From a5fbc43df1d2fbae8829236be34ff965d2fb7509 Mon Sep 17 00:00:00 2001
+From 160556db925247fda4130ccfba4c4f4c23bc6341 Mon Sep 17 00:00:00 2001
 From: Cursor Agent <cursoragent@cursor.com>
 Date: Fri, 11 Sep 2026 22:35:24 +0000
 Subject: [PATCH] Rename the assistant from Rito to Rita
@@ -250,7 +250,7 @@ index 962ba66..ae959f4 100644
    });
  }
 diff --git a/agents/public/widget/rito.js b/agents/public/widget/rito.js
-index 315c8b3..6cf2cd5 100644
+index 315c8b3..143f384 100644
 --- a/agents/public/widget/rito.js
 +++ b/agents/public/widget/rito.js
 @@ -58,9 +58,9 @@
@@ -293,9 +293,9 @@ index 315c8b3..6cf2cd5 100644
      open: function () { setOpen(true); },
      close: function () { setOpen(false); }
    };
-+  // "Rita" fue el nombre anterior de la asistente. Se conserva por si algún
++  // "Rito" fue el nombre anterior de la asistente. Se conserva por si algún
 +  // embed externo todavía lo invoca.
-+  window.Rita = window.Rita;
++  window.Rito = window.Rita;
  })();
 diff --git a/agents/supabase/schema.sql b/agents/supabase/schema.sql
 index a5cf7bd..53215af 100644
