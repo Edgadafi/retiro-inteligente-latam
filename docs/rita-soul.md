@@ -231,7 +231,7 @@ Esta regla delimita el *alcance*, no el *vocabulario*. Dentro de la frontera Rit
 
 El contenido de este archivo `SOUL.md` es la **fuente de verdad (Source of Truth)**. Si la voz, límites o alcance de Rita cambian en este documento, se deben actualizar los siguientes componentes del repositorio:
 
-- **`agent-personas.ts`:** El prompt de sistema en código debe citar e implementar estrictamente las directrices de este documento.
+- **`agent-personas.ts`:** El prompt de sistema en código debe citar e implementar estrictamente las directrices de este documento. Rita es la **única** persona del agente; `"rito"`, su nombre anterior, se acepta en la API como alias legacy y resuelve a Rita sin ampliar su acceso a herramientas.
 - **Bases de conocimiento de preguntas frecuentes (FAQs):** Respuestas automatizadas en la web retirobtc.mx y flujos de WhatsApp.
 - **Casos de prueba de evaluación (Evals / Test Suites):** Los prompts de prueba que evalúan alucinaciones, sesgos de lenguaje, atribución de rendimientos o fugas de rol.
 - **Guiones de Onboarding B2B2C:** Material de presentación para empresas y alianzas comunitarias.

@@ -1,10 +1,10 @@
-# Rito: Retiro Inteligente LATAM 🧭
+# Rita: Retiro Inteligente LATAM 🧭
 
 **Tu futuro financiero, automático.**
 
 Proyecto para **Ethereum México 2026** (AI & Agentic Finance)
 
-Rito es una infraestructura de ahorro automatizado diseñada para la gig economy. Mediante un agente de IA autónomo (**Rito**) y la integración con Etherfuse en Arbitrum, convertimos flujos de efectivo informales (SPEI) en bonos soberanos tokenizados (CETES) sin que el usuario toque cripto.
+Rita es una infraestructura de ahorro automatizado diseñada para la gig economy. Mediante una asistente de IA autónoma (**Rita**) y la integración con Etherfuse en Arbitrum, convertimos flujos de efectivo informales (SPEI) en bonos soberanos tokenizados (CETES) sin que el usuario toque cripto.
 
 🚀 **Demo en vivo:** [retiro-inteligente-latam.vercel.app](https://retiro-inteligente-latam.vercel.app)
 
@@ -51,10 +51,10 @@ Base URL local: `http://localhost:3001/api`
 | `POST` | `/projection/gender-gap` | Brecha pensional de género (Rita) |
 | `GET` | `/agent/config` | Políticas TEE + metadata MCP (sin secretos) |
 | `GET` | `/agent/tools` | Lista de herramientas MCP disponibles |
-| `POST` | `/agent/chat` | Chat con Rito o Rita (`persona`) |
+| `POST` | `/agent/chat` | Chat con Rita (`persona` opcional; `rito` se acepta como alias legacy) |
 | `POST` | `/webhooks/bitso/funding` | Webhook SPEI Bitso/Juno (producción) |
 
-## 💡 ¿Por qué Rito?
+## 💡 ¿Por qué Rita?
 
 - **Fricción Cero:** El usuario vive en el sistema financiero tradicional (SPEI).
 - **Transparencia Radical:** Cada inversión es un evento on-chain auditable.

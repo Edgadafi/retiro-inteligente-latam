@@ -1,4 +1,4 @@
-# Arquitectura — Rito · Retiro Inteligente LATAM
+# Arquitectura — Rita · Retiro Inteligente LATAM
 
 Documentación técnica para revisión de código (ETHMX 2026 · AI & Agentic Finance).
 
@@ -49,7 +49,7 @@ flowchart TB
     Recon -->|settled| Invest
   end
 
-  subgraph ai [Agente Rito]
+  subgraph ai [Asistente Rita]
     Chat["POST /api/agent/chat"]
     MCP[MCP tool handlers]
     CDP[CDP AgentKit TEE wallet]
@@ -76,7 +76,7 @@ flowchart TB
 ### Flujo de capas (vista simplificada)
 
 ```
-Usuario gig  →  Juno Webhook  →  Supabase  →  Reconciliador  →  Rito + MCP  →  Arbitrum
+Usuario gig  →  Juno Webhook  →  Supabase  →  Reconciliador  →  Rita + MCP  →  Arbitrum
    SPEI/CLABE     Bitso Business   deposits+logs   polling 60s      CDP AgentKit    MXNB→CETES
 ```
 
@@ -108,7 +108,7 @@ GET  /api/deposits/:fid           → polling UI stepper (1.5s)
 | Modo | Variable | Comportamiento |
 |------|----------|----------------|
 | On-chain sandbox | `ONCHAIN_SANDBOX_MODE=true` | Simula mint MXNB + compra CETES sin CDP |
-| Chat sandbox | `AGENT_CHAT_SANDBOX_MODE=true` | Rito responde con reglas + MCP sin OpenAI |
+| Chat sandbox | `AGENT_CHAT_SANDBOX_MODE=true` | Rita responde con reglas + MCP sin OpenAI |
 | Producción | CDP + Juno + Etherfuse + Supabase | Transacciones y settlement reales |
 
 ---
