@@ -91,10 +91,10 @@ export function WalletPanel({ userId, initialWallet }: Props) {
         <div className="flex-1 min-w-0">
           <RitoLabel className="text-rito-compass">Monedero agéntico</RitoLabel>
           <BodyText className="text-rito-frost !text-sm font-medium mt-0.5">
-            {wallet.mode === "sandbox" ? "Sandbox demo" : "Agente Rito · TEE"}
+            {wallet.mode === "sandbox" ? "Sandbox demo" : "Asistente Rita · TEE"}
           </BodyText>
           <p className="text-rito-mist text-xs mt-1">
-            Rito opera on-chain por ti — sin seed ni claves en la app.
+            Rita opera on-chain por ti — sin seed ni claves en la app.
           </p>
         </div>
         <span

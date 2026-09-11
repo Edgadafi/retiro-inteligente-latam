@@ -1,5 +1,5 @@
 import { executeTool, formatToolResult } from "../mcp/tools/handlers.js";
-import { resolvePersona, type AgentPersona } from "../config/agent-personas.js";
+import { type AgentPersona } from "../config/agent-personas.js";
 import { AUREO } from "../config/partners.js";
 import type { AgentChatResponse, ChatMessage } from "./agent-chat.service.js";
 
@@ -16,8 +16,7 @@ export async function runAgentChatSandbox(params: {
   persona?: AgentPersona;
 }): Promise<AgentChatResponse> {
   const last = params.messages[params.messages.length - 1]?.content.toLowerCase() ?? "";
-  const persona = resolvePersona(params.persona);
-  const userId = params.userId ?? (persona === "rita" ? "demo-rita-001" : "demo-gig-worker-001");
+  const userId = params.userId ?? "demo-rita-001";
   const toolCalls: Array<{ name: string; result: string }> = [];
 
   const dailyMatch = last.match(/(\d+)\s*(?:pesos\s*)?(?:diario|diarios|al día|al dia|por día|por dia)/);
@@ -29,17 +28,14 @@ export async function runAgentChatSandbox(params: {
   const amountMatch = last.match(/\$\s*(\d+)/) ?? last.match(/(\d+)\s*pesos/);
 
   const genderGapIntent =
-    persona === "rita" &&
-    (last.includes("brecha") ||
-      last.includes("pausa") ||
-      last.includes("maternidad") ||
-      last.includes("cuidados") ||
-      last.includes("cuidado"));
+    last.includes("brecha") ||
+    last.includes("pausa") ||
+    last.includes("maternidad") ||
+    last.includes("cuidados") ||
+    last.includes("cuidado");
 
-  if (persona === "rita") {
-    const canned = ritaCannedResponse(last);
-    if (canned) return { message: canned, toolCalls };
-  }
+  const canned = ritaCannedResponse(last);
+  if (canned) return { message: canned, toolCalls };
 
   if (genderGapIntent) {
     const weekly = weeklyMatch
@@ -107,10 +103,7 @@ export async function runAgentChatSandbox(params: {
         advantageMxnb?: number;
         advantagePercent?: number;
       };
-      const close =
-        persona === "rita"
-          ? `Con ${fmt(daily)} al día durante ${years} años, el fondo en CETES apunta a ${fmt(data.cetes?.finalFund ?? 0)} — ${fmt(data.advantageMxnb ?? 0)} más que un AFORE promedio. Si quieres, calculamos la brecha con pausas por cuidados.`
-          : `Con ${fmt(daily)} al día durante ${years} años, tu norte apunta a ${fmt(data.cetes?.finalFund ?? 0)} en CETES — ${fmt(data.advantageMxnb ?? 0)} más que un AFORE promedio (${data.advantagePercent ?? 0}%). Buen rumbo.`;
+      const close = `Con ${fmt(daily)} al día durante ${years} años, el fondo en CETES apunta a ${fmt(data.cetes?.finalFund ?? 0)} — ${fmt(data.advantageMxnb ?? 0)} más que un AFORE promedio. Si quieres, calculamos la brecha con pausas por cuidados.`;
       return { message: close, toolCalls };
     }
   }
@@ -126,44 +119,29 @@ export async function runAgentChatSandbox(params: {
     if (result.success && result.data && typeof result.data === "object") {
       const plan = result.data as { clabe?: string };
       return {
-        message:
-          persona === "rita"
-            ? `Tu CLABE para aportar por SPEI es ${plan.clabe ?? "—"}. Transfieres desde tu banco; el monto se convierte a MXNB, un peso digital respaldado 1:1, y se resguarda en CETES. Tú conservas la decisión y la custodia.`
-            : `Tu CLABE para SPEI es ${plan.clabe ?? "—"}. Envía ahí y Rito separa automáticamente hacia CETES. Sin trámites bancarios extra.`,
+        message: `Tu CLABE para aportar por SPEI es ${plan.clabe ?? "—"}. Transfieres desde tu banco; el monto se convierte a MXNB, un peso digital respaldado 1:1, y se resguarda en CETES. Tú conservas la decisión y la custodia.`,
         toolCalls,
       };
     }
   }
 
   if (last.includes("cetes") || last.includes("afore") || last.includes("rendimiento") || last.includes("modalidad")) {
-    if (persona === "rita") {
-      return {
-        message:
-          "Los CETES son bonos del gobierno mexicano, de renta fija. La proyección vigente ronda ~11% anual estimado, frente a ~7.8% de una AFORE promedio — son estimaciones, no rendimientos asegurados. Modalidad 40 es un trámite independiente ante el IMSS: esta reserva la complementa, no la sustituye.",
-        toolCalls,
-      };
-    }
     return {
       message:
-        "Los CETES son bonos del gobierno mexicano — los más seguros del mercado. En Rito rinden ~11% anual tokenizados; un AFORE promedio ronda ~7.8%. Misma disciplina de ahorro, más retiro al final. ¿Proyectamos con tus números?",
+        "Los CETES son bonos del gobierno mexicano, de renta fija. La proyección vigente ronda ~11% anual estimado, frente a ~7.8% de una AFORE promedio — son estimaciones, no rendimientos asegurados. Modalidad 40 es un trámite independiente ante el IMSS: esta reserva la complementa, no la sustituye.",
       toolCalls,
     };
   }
 
   if (last.includes("hola") || last.includes("qué eres") || last.includes("que eres")) {
     return {
-      message:
-        persona === "rita"
-          ? `${AI_DECLARATION} Puedo estimar tu brecha de retiro, proyectar tu ahorro en CETES o explicarte el flujo de aportación.`
-          : "Hola — soy Rito, tu brújula de retiro. Te ayudo a ahorrar vía SPEI, convertir a MXNB e invertir en CETES on-chain. Pregúntame por proyecciones, tu CLABE o cómo funciona el flujo.",
+      message: `${AI_DECLARATION} Puedo estimar tu brecha de retiro, proyectar tu ahorro en CETES o explicarte el flujo de aportación.`,
     };
   }
 
   return {
     message:
-      persona === "rita"
-        ? "Puedo estimar tu brecha de retiro (edad, aportación semanal y años de pausa por cuidados), proyectar CETES frente a tu AFORE o explicarte cómo se aporta por SPEI. ¿Con qué empezamos?"
-        : "Puedo proyectar tu retiro (ej. «$50 diarios por 20 años»), explicarte CETES vs AFORE o darte tu CLABE SPEI. ¿Por dónde empezamos?",
+      "Puedo estimar tu brecha de retiro (edad, aportación semanal y años de pausa por cuidados), proyectar CETES frente a tu AFORE o explicarte cómo se aporta por SPEI. ¿Con qué empezamos?",
   };
 }
 

@@ -8,25 +8,25 @@ export const HACKATHON_FAQ = [
     question:
       "¿Por qué Arbiscan muestra actividad limitada en el contrato de Etherfuse?",
     answer:
-      "Como parte de nuestra estrategia de hackathon, desacoplamos el frontend de la ejecución on-chain en tiempo real para una demo fluida. Interactuamos contra endpoints de prueba de Etherfuse en Arbitrum Sepolia. El pipeline de inversión está listo y verificado; la integración a mainnet es configuración de endpoints tras validar la agilidad de Rito.",
+      "Como parte de nuestra estrategia de hackathon, desacoplamos el frontend de la ejecución on-chain en tiempo real para una demo fluida. Interactuamos contra endpoints de prueba de Etherfuse en Arbitrum Sepolia. El pipeline de inversión está listo y verificado; la integración a mainnet es configuración de endpoints tras validar la agilidad de Rita.",
   },
   {
     id: "custodia",
-    question: "¿Es Rito un custodio de dinero de los usuarios?",
+    question: "¿Rita custodia el dinero de los usuarios?",
     answer:
-      "No. Rito usa gestión custodial agéntica (CDP AgentKit). El usuario no maneja llaves privadas, ni hay un wallet maestro opaco. Cada usuario tiene identidad on-chain gestionada por el agente, con trazabilidad directa desde SPEI hasta Stablebond en Arbitrum.",
+      "No. Rita usa gestión custodial agéntica (CDP AgentKit). El usuario no maneja llaves privadas, ni hay un wallet maestro opaco. Cada usuario tiene identidad on-chain gestionada por el agente, con trazabilidad directa desde SPEI hasta Stablebond en Arbitrum.",
   },
   {
     id: "afore",
     question: "¿Cómo compiten contra AFOREs o bancos tradicionales?",
     answer:
-      "No competimos — resolvemos la última milla del ahorro. El trabajador informal sigue usando el banco, pero sin herramientas de micro-ahorro eficiente. Rito captura excedentes del consumo diario y los orienta a CETES tokenizados, con retornos superiores al promedio bancario.",
+      "No competimos — resolvemos la última milla del ahorro. El trabajador informal sigue usando el banco, pero sin herramientas de micro-ahorro eficiente. Rita captura excedentes del consumo diario y los orienta a CETES tokenizados, con retornos superiores al promedio bancario.",
   },
   {
     id: "resiliencia",
     question: "¿Qué pasa si falla OpenAI u otro servicio de terceros?",
     answer:
-      "Rito es resiliente: modos Sandbox y fallbacks automáticos. Si la API de IA no responde, el agente pasa a reglas heurísticas + MCP, sin interrumpir inversión ni seguridad de fondos.",
+      "Rita es resiliente: modos Sandbox y fallbacks automáticos. Si la API de IA no responde, el agente pasa a reglas heurísticas + MCP, sin interrumpir inversión ni seguridad de fondos.",
   },
   {
     id: "monetizacion",

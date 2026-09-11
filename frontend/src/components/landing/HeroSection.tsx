@@ -52,7 +52,7 @@ export function HeroSection({ onStartDemo }: Props) {
             Tu futuro financiero, automático
           </DisplayH1>
           <BodyText className="text-rito-mist text-base sm:text-lg max-w-xl mx-auto">
-            Rito es tu brújula de retiro: una IA que recibe tu SPEI, separa lo que puedes
+            Rita es tu brújula de retiro: una IA que recibe tu SPEI, separa lo que puedes
             ahorrar y compra CETES on-chain — sin trámites, sin fricción, siempre al norte.
           </BodyText>
         </motion.div>
