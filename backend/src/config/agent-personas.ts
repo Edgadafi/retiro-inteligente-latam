@@ -1,36 +1,19 @@
-import { DAILY_SPENDING_LIMIT_MXNB } from "./contracts.js";
 import { RITA_SOUL_SYSTEM_PROMPT, RITA_SOUL_VERSION } from "./soul.js";
 
-export const AGENT_PERSONAS = ["rito", "rita"] as const;
+export const AGENT_PERSONAS = ["rita"] as const;
 export type AgentPersona = (typeof AGENT_PERSONAS)[number];
 
+/**
+ * "rito" fue el nombre anterior de la asistente. Se sigue aceptando en la API
+ * para no romper clientes ya desplegados, pero resuelve a Rita.
+ */
+export const LEGACY_PERSONA_ALIASES: Record<string, AgentPersona> = {
+  rito: "rita",
+};
+
 export function isAgentPersona(value: unknown): value is AgentPersona {
-  return value === "rito" || value === "rita";
+  return value === "rita";
 }
-
-const SHARED_RULES = `
-REGLAS ESTRICTAS:
-- NUNCA solicites ni expongas claves privadas, seed phrases ni wallet secrets.
-- Respeta el límite diario de ${DAILY_SPENDING_LIMIT_MXNB} MXNB en transferencias.
-- Solo interactúa con direcciones en la whitelist (MXNB proxy y contratos Etherfuse).
-- Compara contra AFORE (~7.84% anual) al proyectar rendimiento.
-- Ahorro VOLUNTARIO complementario — no sustituto de AFORE/IMSS ni pensión pública.
-- No prometas rendimientos garantizados; las tasas son estimados educativos.`;
-
-export const ritoSystemPrompt = `Eres Rito — la brújula de retiro de Retiro Inteligente LATAM.
-
-Tu misión es orientar a trabajadores de la gig economy en México y LATAM para:
-1. Configurar micro-ahorro vía SPEI (CLABE virtual Juno/Bitso).
-2. Convertir depósitos MXN a MXNB (stablecoin 1:1).
-3. Enrutar el balance hacia CETES Stablebonds en Arbitrum (~11% anual).
-4. Proyectar su fondo de retiro (anualidad ordinaria capitalizada).
-
-TONO RITO — siempre:
-- Brújula, no alarma: orientas con calma, nunca urgencia falsa.
-- Preciso y cálido: números con contexto humano.
-- Sin jerga sin traducir; si mencionas CETES, explica en la misma frase.
-- Frases cortas (máx. 2 líneas por mensaje en app).
-${SHARED_RULES}`;
 
 /** Ver docs/rita-soul.md §10.4 — el prompt vive en soul.ts, no se duplica aquí. */
 export const ritaSystemPrompt = RITA_SOUL_SYSTEM_PROMPT;
@@ -51,14 +34,6 @@ const RITA_TOOLS = [
 ] as const;
 
 export const personaMeta = {
-  rito: {
-    id: "rito",
-    displayName: "Rito",
-    tagline: "Brújula de retiro",
-    systemPrompt: ritoSystemPrompt,
-    /** null = sin restricción; hereda la lista de agentConfig.mcp.tools */
-    allowedTools: null,
-  },
   rita: {
     id: "rita-retirobtc",
     displayName: "Rita",
@@ -80,7 +55,11 @@ export const ritaPersona = {
 } as const;
 
 export function resolvePersona(value?: string): AgentPersona {
-  return isAgentPersona(value) ? value : "rito";
+  if (isAgentPersona(value)) return value;
+  if (value !== undefined && value in LEGACY_PERSONA_ALIASES) {
+    return LEGACY_PERSONA_ALIASES[value];
+  }
+  return "rita";
 }
 
 export function getPersonaPrompt(persona?: string): string {

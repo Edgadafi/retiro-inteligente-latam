@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { applyPersonaOutputPolicy, stripAureoLinks } from "./persona-output-policy.js";
+import { resolvePersona } from "../config/agent-personas.js";
 
 describe("stripAureoLinks", () => {
   it("leaves messages without Aureo links untouched", () => {
@@ -37,9 +38,15 @@ describe("stripAureoLinks", () => {
 });
 
 describe("applyPersonaOutputPolicy", () => {
-  it("only applies to Rita", () => {
+  it("redacts Aureo links for Rita", () => {
     const text = "Ve a https://app.aureobitcoin.com";
-    assert.equal(applyPersonaOutputPolicy("rito", text), text);
     assert.ok(!applyPersonaOutputPolicy("rita", text).includes("aureobitcoin"));
+  });
+
+  it("still applies through the legacy 'rito' alias", () => {
+    const text = "Ve a https://app.aureobitcoin.com";
+    const persona = resolvePersona("rito");
+    assert.equal(persona, "rita");
+    assert.ok(!applyPersonaOutputPolicy(persona, text).includes("aureobitcoin"));
   });
 });

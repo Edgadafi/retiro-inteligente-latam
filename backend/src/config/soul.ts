@@ -1,5 +1,5 @@
 /**
- * Transcripción ejecutable de docs/rita-soul.md (SOUL.md v1.1).
+ * Transcripción ejecutable de docs/rita-soul.md (SOUL.md v1.4).
  * Fuente de verdad: el documento. Si cambia el SOUL.md, se actualiza aquí en el mismo commit.
  */
 export const RITA_SOUL_VERSION = "1.4";
