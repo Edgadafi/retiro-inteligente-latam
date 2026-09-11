@@ -4,7 +4,7 @@ import { BodyText, DisplayH1, RitoLabel } from "../ui/RitoTypography";
 const TESTIMONIALS = [
   {
     quote:
-      "Antes, el dinero que ganaba en la semana se me iba en cosas pequeñas y para cuando me daba cuenta, ya no tenía nada. Con Rito, ni siento cuando separo para mis CETES. Es como tener un contador en el bolsillo que no me juzga, solo me guía.",
+      "Antes, el dinero que ganaba en la semana se me iba en cosas pequeñas y para cuando me daba cuenta, ya no tenía nada. Con Rita, ni siento cuando separo para mis CETES. Es como tener un contador en el bolsillo que no me juzga, solo me guía.",
     name: "Alejandro",
     age: 26,
     city: "CDMX",
@@ -13,7 +13,7 @@ const TESTIMONIALS = [
   },
   {
     quote:
-      "Como no tengo nómina, siempre vivía con el estrés de '¿y si me enfermo o me quedo sin chamba?'. Rito me enseñó a crear un fondo de ahorro sin que tuviera que aprender finanzas complicadas. Es mi brújula para los meses flacos.",
+      "Como no tengo nómina, siempre vivía con el estrés de '¿y si me enfermo o me quedo sin chamba?'. Rita me enseñó a crear un fondo de ahorro sin que tuviera que aprender finanzas complicadas. Es mi brújula para los meses flacos.",
     name: "Sofía",
     age: 31,
     city: "Guadalajara",
@@ -22,7 +22,7 @@ const TESTIMONIALS = [
   },
   {
     quote:
-      "Siempre escuchaba hablar de CETES, pero me daba miedo o me parecía que era solo para gente con mucho dinero. Rito me quitó el miedo. Ver que mi dinero crece un poquito cada semana me hace sentir que, por fin, estoy construyendo algo para mi retiro.",
+      "Siempre escuchaba hablar de CETES, pero me daba miedo o me parecía que era solo para gente con mucho dinero. Rita me quitó el miedo. Ver que mi dinero crece un poquito cada semana me hace sentir que, por fin, estoy construyendo algo para mi retiro.",
     name: "Javier",
     age: 40,
     city: "Monterrey",
@@ -58,7 +58,7 @@ export function TestimonialGrid() {
         >
           <RitoLabel className="text-rito-compass block">Testimonios</RitoLabel>
           <DisplayH1 as="h2" className="text-rito-frost !text-[1.5rem] sm:!text-[2rem]">
-            La voz de quienes ya usan Rito
+            La voz de quienes ya usan Rita
           </DisplayH1>
           <BodyText className="text-rito-mist max-w-lg mx-auto">
             Trabajadores gig que encontraron su norte — sin jerga, sin juicio.

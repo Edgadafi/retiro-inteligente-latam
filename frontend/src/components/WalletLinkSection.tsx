@@ -76,7 +76,7 @@ export function WalletLinkSection({ userId, linkedAddress: linkedProp, onLinked 
       <div>
         <RitoLabel className="text-rito-compass">Tu wallet (retiros)</RitoLabel>
         <BodyText className="text-rito-mist !text-sm mt-1">
-          Conecta MetaMask o WalletConnect para recibir retiros. Rito sigue invirtiendo
+          Conecta MetaMask o WalletConnect para recibir retiros. Rita sigue invirtiendo
           desde el monedero agéntico.
         </BodyText>
       </div>

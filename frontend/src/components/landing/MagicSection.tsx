@@ -5,19 +5,19 @@ import { BodyText, DisplayH1, RitoLabel } from "../ui/RitoTypography";
 
 const FLOW_STEPS = [
   { id: "spei", label: "SPEI", sub: "Tu depósito entra" },
-  { id: "rito", label: "Rito", sub: "IA analiza y separa" },
+  { id: "rita", label: "Rita", sub: "IA analiza y separa" },
   { id: "cetes", label: "CETES on-chain", sub: "Inversión automática" },
 ] as const;
 
 const PILLARS = [
   {
     title: "Tu CLABE, tu libertad.",
-    body: "Olvida los trámites bancarios complejos. Con Rito, recibes una CLABE única en segundos. Es el puente directo entre tu esfuerzo diario en las apps de delivery y tu cuenta de ahorro personal.",
+    body: "Olvida los trámites bancarios complejos. Con Rita, recibes una CLABE única en segundos. Es el puente directo entre tu esfuerzo diario en las apps de delivery y tu cuenta de ahorro personal.",
     step: 0,
   },
   {
-    title: "Rito: Tu copiloto financiero.",
-    body: "Rito no es solo una app, es una IA que analiza tus ingresos variables y separa lo que te permite ahorrar sin que sientas el impacto. Siempre orientada a tu norte, nunca a la urgencia.",
+    title: "Rita: Tu copiloto financiero.",
+    body: "Rita no es solo una app, es una IA que analiza tus ingresos variables y separa lo que te permite ahorrar sin que sientas el impacto. Siempre orientada a tu norte, nunca a la urgencia.",
     step: 1,
   },
   {
@@ -47,7 +47,7 @@ export function MagicSection() {
         >
           <RitoLabel className="text-rito-amber block">La magia detrás del norte</RitoLabel>
           <DisplayH1 as="h2" className="text-rito-frost !text-[1.5rem] sm:!text-[2rem]">
-            SPEI → Rito → CETES on-chain
+            SPEI → Rita → CETES on-chain
           </DisplayH1>
           <BodyText className="text-rito-mist max-w-xl mx-auto">
             Cuatro pilares, un solo rumbo. Toca cada paso y sigue la brújula.

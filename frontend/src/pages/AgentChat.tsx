@@ -11,27 +11,24 @@ const STARTERS = [
 ];
 
 interface AgentChatProps {
-  persona?: "rito" | "rita";
   userId?: string;
   title?: string;
   subtitle?: string;
   starters?: string[];
 }
 
+const DISPLAY_NAME = "Rita";
+
 export function AgentChat({
-  persona = "rito",
   userId = "demo-gig-worker-001",
   title,
   subtitle,
   starters = STARTERS,
 }: AgentChatProps) {
-  const displayName = persona === "rita" ? "Rita" : "Rito";
-  const heading = title ?? `${displayName} — tu copiloto`;
+  const heading = title ?? `${DISPLAY_NAME} — tu copiloto`;
   const blurb =
     subtitle ??
-    (persona === "rita"
-      ? "Chat con Rita: brecha pensional, pausas por cuidados y ahorro vía SPEI. El monedero sigue en TEE."
-      : "Chat con OpenAI + herramientas MCP. Tu monedero sigue protegido en TEE.");
+    "Chat con Rita: proyecciones, CETES y ahorro vía SPEI. Tu monedero sigue protegido en TEE.";
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -61,7 +58,7 @@ export function AgentChat({
     setError(null);
 
     try {
-      const res = await sendAgentMessage(next, userId, persona);
+      const res = await sendAgentMessage(next, userId);
       setMessages([...next, { role: "assistant", content: res.message }]);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error desconocido");
@@ -90,7 +87,7 @@ export function AgentChat({
           )}
           {chatMode === "sandbox" && (
             <p className="text-rito-amber text-xs mt-2">
-              Modo demo sandbox — {displayName} responde sin OpenAI (quota 429 o AGENT_CHAT_SANDBOX_MODE)
+              Modo demo sandbox — {DISPLAY_NAME} responde sin OpenAI (quota 429 o AGENT_CHAT_SANDBOX_MODE)
             </p>
           )}
           {chatMode === "offline" && (
@@ -105,10 +102,7 @@ export function AgentChat({
         {messages.length === 0 && (
           <div className="space-y-3">
             <p className="text-rito-mist text-sm">
-              Hola — soy {displayName}.{" "}
-              {persona === "rita"
-                ? "Pregúntame sobre tu brecha, una pausa por cuidados o tu plan de ahorro."
-                : "Pregúntame sobre tu retiro, CETES o tu plan de ahorro."}
+              Hola — soy {DISPLAY_NAME}. Pregúntame sobre tu retiro, CETES o tu plan de ahorro.
             </p>
             <div className="flex flex-wrap gap-2">
               {starters.map((s) => (
@@ -130,7 +124,7 @@ export function AgentChat({
             className={`text-sm ${m.role === "user" ? "text-rito-frost" : "text-rito-mist"}`}
           >
             <RitoLabel className="text-rito-compass/70 mr-2 !inline !normal-case">
-              {m.role === "user" ? "Tú" : displayName}
+              {m.role === "user" ? "Tú" : DISPLAY_NAME}
             </RitoLabel>
             {m.content}
           </div>
