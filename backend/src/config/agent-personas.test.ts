@@ -25,6 +25,13 @@ describe("resolvePersona", () => {
     assert.equal(resolvePersona("nope"), "rita");
   });
 
+  it("does not treat inherited object keys as personas", () => {
+    for (const key of ["__proto__", "constructor", "toString", "hasOwnProperty"]) {
+      assert.equal(resolvePersona(key), "rita");
+      assert.equal(isToolAllowedForPersona(key, "transfer"), false);
+    }
+  });
+
   it("no longer recognises 'rito' as a persona of its own", () => {
     assert.equal(isAgentPersona("rito"), false);
     assert.equal(isAgentPersona("rita"), true);

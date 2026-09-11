@@ -56,7 +56,9 @@ export const ritaPersona = {
 
 export function resolvePersona(value?: string): AgentPersona {
   if (isAgentPersona(value)) return value;
-  if (value !== undefined && value in LEGACY_PERSONA_ALIASES) {
+  // hasOwn, no `in`: evita que claves heredadas ("toString", "constructor")
+  // devuelvan algo que no es una persona.
+  if (value !== undefined && Object.hasOwn(LEGACY_PERSONA_ALIASES, value)) {
     return LEGACY_PERSONA_ALIASES[value];
   }
   return "rita";
