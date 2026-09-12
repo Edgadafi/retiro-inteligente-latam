@@ -1,0 +1,42 @@
+From 5577f1f3f066d25571864c94b90e5e7b38be5fe9 Mon Sep 17 00:00:00 2001
+From: Cursor Agent <cursoragent@cursor.com>
+Date: Sat, 12 Sep 2026 02:15:30 +0000
+Subject: [PATCH] Bump the widget cache buster so browsers pick up the renamed
+ widget
+
+The loader requests /widget/rito.js?v=texto-1 and the response carries
+cache-control: public, max-age=3600, so a returning visitor keeps the
+old widget for up to an hour after the rename ships and still sees the
+name Rito.
+
+Measured against production: a request with a never-before-used query
+string came back x-vercel-cache: HIT with the same age as the canonical
+URL, so the CDN is not keyed on the query string and this bump does
+nothing there. It only busts the browser cache, which is keyed on the
+full URL.
+
+That is why this is a separate commit. Shipping it together with the
+rename races the two deployments: the static site could publish a
+loader asking for v=rita-1 before the agents project publishes the new
+widget, and browsers would cache the old file under the new key for an
+hour. Apply this only after the agents deployment already serves Rita.
+---
+ rito-loader.js | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/rito-loader.js b/rito-loader.js
+index c1ce5eb..e2e07fa 100644
+--- a/rito-loader.js
++++ b/rito-loader.js
+@@ -13,7 +13,7 @@
+     'https://retirobtc-agents.vercel.app';
+   var base = url.replace(/\/$/, '');
+   var s = document.createElement('script');
+-  s.src = base + '/widget/rito.js?v=texto-1';
++  s.src = base + '/widget/rito.js?v=rita-1';
+   s.setAttribute('data-agents-url', base);
+   s.defer = true;
+   s.onerror = function () {
+-- 
+2.43.0
+

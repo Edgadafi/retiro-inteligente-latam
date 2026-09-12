@@ -64,8 +64,29 @@ Los ocho casos deben pasar. Este test detectó que una pasada de renombrado
 sobre prosa había convertido `window.Rito = window.Rita` en una autoasignación,
 eliminando el alias; conviene volver a correrlo si se reescribe el widget.
 
-## Después de desplegar
+## Después de desplegar: `2-purga-cache-widget.patch`
 
-El loader pide `/widget/rito.js?v=texto-1` y la respuesta se cachea una hora.
-Sube el sufijo `v=` para que los navegadores tomen el texto nuevo sin esperar la
-expiración.
+El loader pide `/widget/rito.js?v=texto-1` y la respuesta llega con
+`cache-control: public, max-age=3600`. Quien ya visitó el sitio conserva el
+widget viejo hasta una hora después del despliegue y sigue leyendo «Rito».
+
+`2-purga-cache-widget.patch` sube ese sufijo a `v=rita-1`.
+
+- SHA-256: `e1d55364a25ae586d521f9e4dd209d1d9b7e13b6b2c078aba96b85efed537aa6`
+
+**Va en un despliegue posterior, no junto al rename.** Medido contra producción,
+una petición con un query string nunca usado devuelve `x-vercel-cache: HIT` con
+el mismo `etag` y el mismo `age` que la URL canónica: el CDN no distingue el
+query string, así que subir `v=` no purga nada ahí, sólo la caché del navegador.
+
+Si ambos cambios viajan en el mismo push, el sitio estático y el servicio de
+agentes se despliegan en paralelo y pueden cruzarse: el navegador pediría
+`?v=rita-1` antes de que el widget nuevo esté publicado y cachearía el archivo
+viejo bajo la clave nueva durante una hora, que es justo lo contrario de lo que
+se busca.
+
+Aplícalo cuando esto ya devuelva `Rita`:
+
+```sh
+curl -s https://retirobtc-agents.vercel.app/widget/rito.js | grep -o 'rito-toggle[^>]*>[A-Za-z]*'
+```
