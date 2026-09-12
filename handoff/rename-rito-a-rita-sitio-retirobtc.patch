@@ -1,0 +1,602 @@
+From 160556db925247fda4130ccfba4c4f4c23bc6341 Mon Sep 17 00:00:00 2001
+From: Cursor Agent <cursoragent@cursor.com>
+Date: Fri, 11 Sep 2026 22:35:24 +0000
+Subject: [PATCH] Rename the assistant from Rito to Rita
+
+Rita is the new name of the retirobtc.mx AI assistant. This renames the
+identity users actually see: the chat widget button, its panel header,
+the greeting, the system prompt, the multilingual help notes on the
+calculator, the privacy notice and the escalation emails.
+
+Internal plumbing keeps the rito namespace on purpose, because renaming
+it breaks deployed contracts rather than the brand:
+
+  - /widget/rito.js and rito-loader.js are URLs already cached by
+    browsers and referenced by the deployed static site.
+  - RITO_CHAT_MODEL is an environment variable configured in Vercel.
+  - #rito-* DOM ids, .rito-msg classes, the rito_session localStorage
+    key, the RETIROBTC_RITO flag and the ?rito=0 query parameter are
+    all runtime state that users may already have set.
+
+window.Rita is the new widget API, with window.Rito kept as an alias in
+case an external embed still calls it.
+---
+ AGENTS.md                                    |  2 +-
+ README.md                                    | 10 ++++-----
+ agents-config.js                             |  2 +-
+ agents/.env.example                          |  2 +-
+ agents/README.md                             |  4 ++--
+ agents/app/admin/alerts/page.tsx             |  2 +-
+ agents/app/page.tsx                          |  4 ++--
+ agents/content/knowledge/aviso-privacidad.md |  6 +++---
+ agents/content/knowledge/product-brief.md    |  2 +-
+ agents/lib/agents/rito.ts                    |  2 +-
+ agents/lib/config.ts                         |  2 +-
+ agents/lib/email/resend.ts                   |  4 ++--
+ agents/public/widget/rito.js                 | 17 ++++++++-------
+ agents/supabase/schema.sql                   |  2 +-
+ aviso-privacidad.html                        |  2 +-
+ docs/activar-p0-produccion.md                |  2 +-
+ docs/agentes-ia-arquitectura.md              | 10 ++++-----
+ docs/campana-maraton-wenlopez.md             |  6 +++---
+ docs/email-corporativo-namecheap.md          |  2 +-
+ docs/guia-marca-tono-claude.md               |  6 +++---
+ docs/product-brief.md                        |  2 +-
+ docs/roadmap-agentico-ingresos.md            | 22 ++++++++++----------
+ script.js                                    |  8 +++----
+ 23 files changed, 62 insertions(+), 59 deletions(-)
+
+diff --git a/AGENTS.md b/AGENTS.md
+index 0415ec8..a2c1ff1 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -2,7 +2,7 @@
+ 
+ ## Cursor Cloud specific instructions
+ 
+-Rito (chat) vive en el proyecto Vercel `retirobtc-agents`, no en el sitio estático. Cambios de tono o de `agents/public/widget/rito.js` solo se ven tras el deploy de ese servicio.
++Rita (chat) vive en el proyecto Vercel `retirobtc-agents`, no en el sitio estático. Cambios de tono o de `agents/public/widget/rito.js` solo se ven tras el deploy de ese servicio.
+ 
+ El widget se cachea 1 hora (`Cache-Control` en `agents/next.config.ts`). Si cambias el JS del chat, sube también `rito-loader.js` con un `?v=` nuevo para que el front estático pida el archivo fresco.
+ 
+diff --git a/README.md b/README.md
+index 5901055..393e04d 100644
+--- a/README.md
++++ b/README.md
+@@ -8,7 +8,7 @@ Planifica tu independencia financiera con Bitcoin. Una Single Page Application (
+ |-----------|-----|
+ | [`docs/product-brief.md`](docs/product-brief.md) | Resumen operativo: personas, roadmap, KPIs, decisiones de producto |
+ | [`docs/estudio-mercado-calculadora-retiro-bitcoin.md`](docs/estudio-mercado-calculadora-retiro-bitcoin.md) | Estudio de mercado completo (México/LATAM, Fedi, 2026) |
+-| [`docs/agentes-ia-arquitectura.md`](docs/agentes-ia-arquitectura.md) | Ecosistema agentes IA: Rito, leads, RAG, monitor legal |
++| [`docs/agentes-ia-arquitectura.md`](docs/agentes-ia-arquitectura.md) | Ecosistema agentes IA: Rita, leads, RAG, monitor legal |
+ | [`docs/roadmap-agentico-ingresos.md`](docs/roadmap-agentico-ingresos.md) | Orden de construcción de los agentes pendientes, priorizado por impacto en ingresos |
+ | [`docs/activar-p0-produccion.md`](docs/activar-p0-produccion.md) | Activar medición de ingresos en prod (merge, SQL, secretos Vercel) |
+ | [`agents/README.md`](agents/README.md) | Deploy y env vars del servicio Next.js de agentes |
+@@ -35,9 +35,9 @@ La regla de Cursor [`.cursor/rules/producto-estudio-mercado.mdc`](.cursor/rules/
+ ├── manifest.json   # PWA manifest
+ ├── package.json    # Dependencias npm (SDK Mercado Pago para APIs serverless)
+ ├── api/            # Serverless: Mercado Pago (preferencia, verificación), LNbits, webhook MP
+-├── agents/         # Servicio Next.js: Rito, leads, RAG, cron DOF (deploy: retirobtc-agents.vercel.app)
++├── agents/         # Servicio Next.js: Rita, leads, RAG, cron DOF (deploy: retirobtc-agents.vercel.app)
+ ├── agents-config.js # URL del servicio de agentes (prod vs local)
+-├── rito-loader.js  # Carga widget Rito en landing, calc, brújula
++├── rito-loader.js  # Carga widget Rita en landing, calc, brújula
+ ├── docs/           # Estudio de mercado, product brief, arquitectura agentes
+ ├── .cursor/rules/  # Reglas de contexto para Cursor (producto, etc.)
+ ├── .env.example    # Plantilla de variables (copiar a .env.local)
+@@ -361,9 +361,9 @@ Los pagos se procesan vía Lightning Network usando WebLN.
+ 
+ ---
+ 
+-## Agentes IA (Rito)
++## Agentes IA (Rita)
+ 
+-El front estático integra **Rito** (chat 24/7) y captura de leads del formulario guía en `/brujula` vía el servicio en [`agents/`](agents/).
++El front estático integra **Rita** (chat 24/7) y captura de leads del formulario guía en `/brujula` vía el servicio en [`agents/`](agents/).
+ 
+ | Componente | Descripción |
+ |------------|-------------|
+diff --git a/agents-config.js b/agents-config.js
+index 4b74d4e..56faba6 100644
+--- a/agents-config.js
++++ b/agents-config.js
+@@ -1,5 +1,5 @@
+ /**
+- * URL del servicio de agentes IA (Rito, leads).
++ * URL del servicio de agentes IA (Rita, leads).
+  * En local con `cd agents && npm run dev`, usa http://localhost:3000
+  */
+ (function (global) {
+diff --git a/agents/.env.example b/agents/.env.example
+index 18b712b..8094f50 100644
+--- a/agents/.env.example
++++ b/agents/.env.example
+@@ -1,4 +1,4 @@
+-# Gemini — cerebro de Rito (chat + resúmenes legales)
++# Gemini — cerebro de Rita (chat + resúmenes legales)
+ GOOGLE_GENERATIVE_AI_API_KEY=
+ # Opcional: gemini-3.5-flash (default), gemini-3.5-flash-lite, gemini-2.5-flash, etc.
+ RITO_CHAT_MODEL=gemini-3.5-flash
+diff --git a/agents/README.md b/agents/README.md
+index e8ddc0f..40a45ac 100644
+--- a/agents/README.md
++++ b/agents/README.md
+@@ -6,7 +6,7 @@ Servicio **Next.js 15 + TypeScript** desplegado en `https://retirobtc-agents.ver
+ 
+ | Agente | Endpoint / UI |
+ |--------|----------------|
+-| **Rito** | `POST /api/chat` + [`public/widget/rito.js`](public/widget/rito.js) |
++| **Rita** | `POST /api/chat` + [`public/widget/rito.js`](public/widget/rito.js) |
+ | **Captura leads** | `POST /api/leads` |
+ | **Investigador legal** | Cron `GET /api/cron/legal-monitor` |
+ | **Admin alertas** | [`/admin/alerts`](app/admin/alerts/page.tsx) |
+@@ -35,7 +35,7 @@ Activación en producción: [`../docs/activar-p0-produccion.md`](../docs/activar
+ ```bash
+ cd agents
+ cp .env.example .env.local
+-# Rellenar GOOGLE_GENERATIVE_AI_API_KEY (Rito), OPENAI_API_KEY (embeddings RAG), SUPABASE_*, RESEND_*, ADMIN_SECRET, CRON_SECRET, INTERNAL_API_SECRET
++# Rellenar GOOGLE_GENERATIVE_AI_API_KEY (Rita), OPENAI_API_KEY (embeddings RAG), SUPABASE_*, RESEND_*, ADMIN_SECRET, CRON_SECRET, INTERNAL_API_SECRET
+ npm install
+ npm run dev
+ ```
+diff --git a/agents/app/admin/alerts/page.tsx b/agents/app/admin/alerts/page.tsx
+index 5a4a7a1..0b6e4a4 100644
+--- a/agents/app/admin/alerts/page.tsx
++++ b/agents/app/admin/alerts/page.tsx
+@@ -73,7 +73,7 @@ export default function AdminAlertsPage() {
+     <main className="min-h-screen bg-zinc-950 text-zinc-100 p-6 max-w-3xl mx-auto">
+       <h1 className="text-xl font-semibold mb-2">Legal Alerts — Retiro BTC Agents</h1>
+       <p className="text-sm text-zinc-400 mb-6">
+-        Revisión humana antes de indexar en la base de conocimiento de Rito.
++        Revisión humana antes de indexar en la base de conocimiento de Rita.
+       </p>
+ 
+       <label className="block mb-4">
+diff --git a/agents/app/page.tsx b/agents/app/page.tsx
+index bc7ba19..a35bc62 100644
+--- a/agents/app/page.tsx
++++ b/agents/app/page.tsx
+@@ -5,14 +5,14 @@ export default function Home() {
+     <main className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col items-center justify-center p-8">
+       <h1 className="text-2xl font-semibold mb-2">Retiro BTC — Agentes IA</h1>
+       <p className="text-zinc-400 text-sm mb-6 text-center max-w-md">
+-        Servicio Vertical 1: Rito (chat), captura de leads y monitor legal DOF.
++        Servicio Vertical 1: Rita (chat), captura de leads y monitor legal DOF.
+       </p>
+       <ul className="text-sm space-y-2 text-orange-400">
+         <li>
+           <Link href="/admin/alerts">Admin — alertas legales</Link>
+         </li>
+         <li>
+-          <a href="/widget/rito.js">Widget Rito (embed)</a>
++          <a href="/widget/rito.js">Widget Rita (embed)</a>
+         </li>
+       </ul>
+     </main>
+diff --git a/agents/content/knowledge/aviso-privacidad.md b/agents/content/knowledge/aviso-privacidad.md
+index 5a55cc9..89bb6b5 100644
+--- a/agents/content/knowledge/aviso-privacidad.md
++++ b/agents/content/knowledge/aviso-privacidad.md
+@@ -1,13 +1,13 @@
+-# Aviso de privacidad — puntos clave Rito
++# Aviso de privacidad — puntos clave Rita
+ 
+ Responsable: Ramesa S.A. de C.V. (retirobtc.mx).
+ 
+ ## Datos tratados
+ - Leads guía: nombre, email, preferencia Bitcoin
+-- Chat Rito: mensajes sin solicitar PII financiera
++- Chat Rita: mensajes sin solicitar PII financiera
+ - Pagos Premium: procesados por Mercado Pago / Lightning — retirobtc.mx no custodia
+ 
+-## Rito
++## Rita
+ Agente de IA 24/7 para soporte y onboarding educativo.
+ No reemplaza asesoría legal/fiscal humana.
+ 
+diff --git a/agents/content/knowledge/product-brief.md b/agents/content/knowledge/product-brief.md
+index cf7408a..e137d48 100644
+--- a/agents/content/knowledge/product-brief.md
++++ b/agents/content/knowledge/product-brief.md
+@@ -1,4 +1,4 @@
+-# Product Brief — Retiro BTC (extracto para RAG Rito)
++# Product Brief — Retiro BTC (extracto para RAG Rita)
+ 
+ ## Qué es retirobtc.mx
+ Calculadora de Retiro Bitcoin: mini-app Fedi para planeación de retiro en México/LATAM.
+diff --git a/agents/lib/agents/rito.ts b/agents/lib/agents/rito.ts
+index a4e258f..aedb3fc 100644
+--- a/agents/lib/agents/rito.ts
++++ b/agents/lib/agents/rito.ts
+@@ -1,4 +1,4 @@
+-export const RITO_SYSTEM_PROMPT = `Eres Rito, de retirobtc.mx. Hablas como una persona real en un chat: claro, cercano y sin relleno. Español de México (tú). Si la persona escribe en otro idioma, responde en ese idioma.
++export const RITO_SYSTEM_PROMPT = `Eres Rita, de retirobtc.mx. Hablas como una persona real en un chat: claro, cercano y sin relleno. Español de México (tú). Si la persona escribe en otro idioma, responde en ese idioma.
+ 
+ QUIÉN ERES
+ Ayudas a entender el retiro con Bitcoin (sats), Fedi y Guardianes, y cómo se compara con una AFORE. No eres abogado, asesor fiscal ni vendedor.
+diff --git a/agents/lib/config.ts b/agents/lib/config.ts
+index b4722bd..5ebf18b 100644
+--- a/agents/lib/config.ts
++++ b/agents/lib/config.ts
+@@ -55,7 +55,7 @@ export function isSupabaseConfigured(): boolean {
+  */
+ export const SUPABASE_SCHEMA = (process.env.SUPABASE_DB_SCHEMA || 'public').trim() || 'public';
+ 
+-/** Modelo Gemini para Rito y resúmenes legales (override opcional). */
++/** Modelo Gemini para Rita y resúmenes legales (override opcional). */
+ export const RITO_CHAT_MODEL = process.env.RITO_CHAT_MODEL || 'gemini-3.5-flash';
+ 
+ /** Ignora placeholders vacíos (`""`) que Vercel puede devolver como valor. */
+diff --git a/agents/lib/email/resend.ts b/agents/lib/email/resend.ts
+index 962ba66..ae959f4 100644
+--- a/agents/lib/email/resend.ts
++++ b/agents/lib/email/resend.ts
+@@ -30,7 +30,7 @@ export async function sendGuideEmail(params: {
+           </a>
+         </p>
+         <p style="font-size: 0.875rem; color: #666;">
+-          Este enlace expira en 7 días. ¿Dudas? Visita <a href="https://retirobtc.mx">retirobtc.mx</a> y pregunta a Rito.
++          Este enlace expira en 7 días. ¿Dudas? Visita <a href="https://retirobtc.mx">retirobtc.mx</a> y pregunta a Rita.
+         </p>
+         <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;" />
+         <p style="font-size: 0.75rem; color: #999;">
+@@ -60,7 +60,7 @@ export async function sendEscalationEmail(params: {
+   await resend.emails.send({
+     from: FROM_EMAIL,
+     to,
+-    subject: `[Rito] Escalamiento humano — sesión ${params.sessionKey.slice(0, 8)}`,
++    subject: `[Rita] Escalamiento humano — sesión ${params.sessionKey.slice(0, 8)}`,
+     text: `Sesión: ${params.sessionKey}\n\nMensaje del usuario:\n${params.userMessage}\n\nPanel: ${AGENTS_BASE_URL}/admin/alerts`,
+   });
+ }
+diff --git a/agents/public/widget/rito.js b/agents/public/widget/rito.js
+index 315c8b3..143f384 100644
+--- a/agents/public/widget/rito.js
++++ b/agents/public/widget/rito.js
+@@ -58,9 +58,9 @@
+   var root = document.createElement('div');
+   root.id = 'rito-root';
+   root.innerHTML =
+-    '<button type="button" id="rito-toggle" aria-label="Abrir chat Rito" aria-expanded="false" aria-controls="rito-panel">Rito</button>' +
+-    '<div id="rito-panel" role="dialog" aria-label="Chat Rito" aria-modal="true">' +
+-    '<div id="rito-header"><div id="rito-header-copy">Rito · Soporte retirobtc.mx<span>Información educativa · no es asesoría legal/fiscal</span></div><button type="button" id="rito-close" aria-label="Cerrar chat">×</button></div>' +
++    '<button type="button" id="rito-toggle" aria-label="Abrir chat Rita" aria-expanded="false" aria-controls="rito-panel">Rita</button>' +
++    '<div id="rito-panel" role="dialog" aria-label="Chat Rita" aria-modal="true">' +
++    '<div id="rito-header"><div id="rito-header-copy">Rita · Soporte retirobtc.mx<span>Información educativa · no es asesoría legal/fiscal</span></div><button type="button" id="rito-close" aria-label="Cerrar chat">×</button></div>' +
+     '<div id="rito-messages"></div>' +
+     '<div id="rito-disclaimer">No compartas datos de pago ni montos personales.</div>' +
+     '<form id="rito-form"><textarea id="rito-input" placeholder="Escríbeme: AFORE, Fedi, calculadora…" rows="1" autocomplete="off"></textarea><button type="submit" id="rito-send">→</button></form>' +
+@@ -80,10 +80,10 @@
+   function setOpen(open) {
+     panel.classList.toggle('open', open);
+     toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+-    toggle.setAttribute('aria-label', open ? 'Cerrar chat Rito' : 'Abrir chat Rito');
++    toggle.setAttribute('aria-label', open ? 'Cerrar chat Rita' : 'Abrir chat Rita');
+     if (open && messages.length === 0) {
+       var greet =
+-        'Hola, soy Rito. Si quieres, vemos tu retiro con Bitcoin: la calculadora, Fedi o cómo se compara con una AFORE.\n\n¿Por dónde empezamos?';
++        'Hola, soy Rita. Si quieres, vemos tu retiro con Bitcoin: la calculadora, Fedi o cómo se compara con una AFORE.\n\n¿Por dónde empezamos?';
+       messages.push({ role: 'assistant', content: greet });
+       appendMsg('bot', greet);
+     }
+@@ -269,12 +269,15 @@
+         return read();
+       })
+       .catch(function (err) {
+-        botEl.textContent = err.message || 'No pude conectar con Rito. Intenta de nuevo.';
++        botEl.textContent = err.message || 'No pude conectar con Rita. Intenta de nuevo.';
+       });
+   });
+ 
+-  window.Rito = {
++  window.Rita = {
+     open: function () { setOpen(true); },
+     close: function () { setOpen(false); }
+   };
++  // "Rito" fue el nombre anterior de la asistente. Se conserva por si algún
++  // embed externo todavía lo invoca.
++  window.Rito = window.Rita;
+ })();
+diff --git a/agents/supabase/schema.sql b/agents/supabase/schema.sql
+index a5cf7bd..53215af 100644
+--- a/agents/supabase/schema.sql
++++ b/agents/supabase/schema.sql
+@@ -61,7 +61,7 @@ create table if not exists consent_records (
+ 
+ create index if not exists consent_records_email_idx on consent_records (email);
+ 
+--- Chat Rito
++-- Chat Rita
+ create table if not exists chat_sessions (
+   id uuid primary key default gen_random_uuid(),
+   session_key text not null unique,
+diff --git a/aviso-privacidad.html b/aviso-privacidad.html
+index 66bd786..01b119c 100644
+--- a/aviso-privacidad.html
++++ b/aviso-privacidad.html
+@@ -93,7 +93,7 @@
+             <li>Facilitar las herramientas de simulación matemática y proyecciones de ahorro en nuestra Calculadora de Retiro.</li>
+             <li>Procesar el envío, entrega, facturación física y cobro de los productos adquiridos en nuestra tienda en línea.</li>
+             <li>Enviar el material informativo solicitado (incluida la guía digital / eBook).</li>
+-            <li>Atender y resolver dudas operativas las 24/7 a través de nuestro agente de inteligencia artificial Rito.</li>
++            <li>Atender y resolver dudas operativas las 24/7 a través de nuestra agente de inteligencia artificial Rita.</li>
+           </ul>
+           <p class="br-body">De manera adicional, utilizaremos su información para las siguientes finalidades secundarias, no necesarias para el servicio principal:</p>
+           <ul class="legal-list br-body">
+diff --git a/docs/activar-p0-produccion.md b/docs/activar-p0-produccion.md
+index 6e8dfec..5b81794 100644
+--- a/docs/activar-p0-produccion.md
++++ b/docs/activar-p0-produccion.md
+@@ -8,7 +8,7 @@
+ | Pieza | Host | Estado |
+ |-------|------|--------|
+ | Front + APIs de pago | `https://www.retirobtc.mx` | Prod en `main` (`f20280c`). Webhook **viejo**: POST sin firma responde **200 OK**. No registra compras. |
+-| Agentes (Rito, leads, alertas) | `https://retirobtc-agents.vercel.app` | Vivo. `/api/chat` y `/api/leads` responden. **`/api/purchases` y `/api/admin/revenue` dan 404** — P0 de agentes no está desplegado. |
++| Agentes (Rita, leads, alertas) | `https://retirobtc-agents.vercel.app` | Vivo. `/api/chat` y `/api/leads` responden. **`/api/purchases` y `/api/admin/revenue` dan 404** — P0 de agentes no está desplegado. |
+ | `agents.retirobtc.mx` | — | **Sin DNS.** No usarlo. |
+ | Preview de este PR | `*.vercel.app` del catálogo | Código P0 del root sí, pero Vercel Authentication bloquea el webhook (401). |
+ 
+diff --git a/docs/agentes-ia-arquitectura.md b/docs/agentes-ia-arquitectura.md
+index 7adf0a1..e71f498 100644
+--- a/docs/agentes-ia-arquitectura.md
++++ b/docs/agentes-ia-arquitectura.md
+@@ -9,7 +9,7 @@
+ 
+ | Agente | Implementación |
+ |--------|----------------|
+-| **Rito** | Chat streaming Gemini Flash + RAG pgvector. Widget en landing, calc, brújula. |
++| **Rita** | Chat streaming Gemini Flash + RAG pgvector. Widget en landing, calc, brújula. |
+ | **Captura leads** | `POST /api/leads` desde formulario guía `/brujula`. Resend + token guía PDF. |
+ | **Investigador jurídico** | Cron diario DOF RSS → `legal_alerts` → revisión humana → ingest KB. |
+ 
+@@ -51,7 +51,7 @@ Detalle de la fase en [P0 del roadmap](./roadmap-agentico-ingresos.md#5-p0--medi
+ flowchart TB
+   User[Usuario retirobtc.mx]
+   Brujula[brujula.html formulario guía]
+-  Widget[Rito widget]
++  Widget[Rita widget]
+   LeadsAPI["/api/leads"]
+   ChatAPI["/api/chat"]
+   Supabase[(Supabase)]
+@@ -87,7 +87,7 @@ flowchart TB
+ 
+ | Ruta | Rol |
+ |------|-----|
+-| [`agents/app/api/chat/route.ts`](../agents/app/api/chat/route.ts) | Rito streaming |
++| [`agents/app/api/chat/route.ts`](../agents/app/api/chat/route.ts) | Rita streaming |
+ | [`agents/app/api/leads/route.ts`](../agents/app/api/leads/route.ts) | Captura leads |
+ | [`agents/app/api/purchases/route.ts`](../agents/app/api/purchases/route.ts) | Ingesta de compras (P0) |
+ | [`agents/app/api/admin/revenue/route.ts`](../agents/app/api/admin/revenue/route.ts) | Reporte de ingresos (P0) |
+@@ -99,7 +99,7 @@ flowchart TB
+ | [`rito-loader.js`](../rito-loader.js) | Carga dinámica del widget |
+ | [`brujula-quiz.js`](../brujula-quiz.js) | Integración leads API |
+ 
+-## Política Rito
++## Política Rita
+ 
+ - Tono empático, institucional, pedagógico.
+ - **No** asesoría fiscal/legal vinculante — disclaimer en cada sesión.
+@@ -128,7 +128,7 @@ Ver [`agents/.env.example`](../agents/.env.example).
+ ## KPIs Vertical 1
+ 
+ 1. Conversión brújula → lead válido
+-2. P95 primera respuesta Rito &lt; 3 s
++2. P95 primera respuesta Rita &lt; 3 s
+ 3. % conversaciones sin escalamiento humano
+ 4. Tiempo alerta legal → KB indexada
+ 
+diff --git a/docs/campana-maraton-wenlopez.md b/docs/campana-maraton-wenlopez.md
+index 9e0e084..098e750 100644
+--- a/docs/campana-maraton-wenlopez.md
++++ b/docs/campana-maraton-wenlopez.md
+@@ -78,7 +78,7 @@ Canales: catálogo Fedi, *Tu AFORE Soberana*, maratón (Wen/Emily), Nostr/Telegr
+ 
+ ### 4. ¿Producto en 2 años?
+ 
+-Mini-app en federaciones LATAM; comparador AFORE vivo; micro-ahorro Lightning; agente **Rito** para dudas educativas; miles de proyecciones compartidas.
++Mini-app en federaciones LATAM; comparador AFORE vivo; micro-ahorro Lightning; agente **Rita** para dudas educativas; miles de proyecciones compartidas.
+ 
+ ## Agregar mini-app en Fedi (pegar en chat del stream)
+ 
+@@ -95,7 +95,7 @@ El listado oficial en catalog.fedi.xyz puede tardar; la URL directa funciona hoy
+ 
+ - [ ] URL demo abre con resultado en <10 s
+ - [ ] Precio BTC visible (CoinGecko o fallback)
+-- [ ] Rito carga o `?rito=0` si falla
++- [ ] Rita carga o `?rito=0` si falla
+ - [ ] Bio X con link UTM
+ - [ ] Screenshot listo para Emily
+ - [ ] Ícono Fedi: `https://retirobtc.mx/assets/logo-fedi-512.png`
+@@ -130,7 +130,7 @@ Texto sugerido:
+ ## Leads y métricas
+ 
+ - Revisar tráfico con UTM `maraton-wenlopez`, `share-maraton`, `maraton-recap`.
+-- Leads vía agente Rito → `retirobtc-agents.vercel.app` / Supabase si configurado.
++- Leads vía agente Rita → `retirobtc-agents.vercel.app` / Supabase si configurado.
+ 
+ ## Clip Reel
+ 
+diff --git a/docs/email-corporativo-namecheap.md b/docs/email-corporativo-namecheap.md
+index 7882a69..5f8694e 100644
+--- a/docs/email-corporativo-namecheap.md
++++ b/docs/email-corporativo-namecheap.md
+@@ -147,7 +147,7 @@ El trial Scale ya está comprado. Opciones:
+ | Canal | Quién lo opera | No mezclar con |
+ |-------|----------------|----------------|
+ | Recepción `@retirobtc.mx` | Namecheap Email Forwarding | Private Email |
+-| Contacto humano (Rito) | Gmail `calculadora.retirobtc@gmail.com` | — |
++| Contacto humano (Rita) | Gmail `calculadora.retirobtc@gmail.com` | — |
+ | Guía / leads `/brujula` | Resend en `agents/` | MX de Namecheap |
+ | Cobros Premium | Mercado Pago / Lightning | Correo |
+ 
+diff --git a/docs/guia-marca-tono-claude.md b/docs/guia-marca-tono-claude.md
+index 18dfeff..2308ad7 100644
+--- a/docs/guia-marca-tono-claude.md
++++ b/docs/guia-marca-tono-claude.md
+@@ -15,7 +15,7 @@
+ | Landing | `https://retirobtc.mx/` | Confianza, SEO, campaña |
+ | Calculadora | `https://retirobtc.mx/calc` | Producto core (Fedi Mini App) |
+ | Brújula | `https://retirobtc.mx/brujula` | Embudo educativo / leads |
+-| Agente Rito | Widget en sitio | Soporte 24/7, onboarding |
++| Agente Rita | Widget en sitio | Soporte 24/7, onboarding |
+ 
+ **Propuesta de valor (una línea):**
+ 
+@@ -86,7 +86,7 @@
+ 
+ > El asesor financiero comunitario que explica Bitcoin como herramienta de retiro, no como apuesta.
+ 
+-**Voz del agente Rito (si aplica):** empático, institucional, pedagógico, muy seguro. Español de México. No asesoría fiscal/legal vinculante.
++**Voz del agente Rita (si aplica):** empático, institucional, pedagógico, muy seguro. Español de México. No asesoría fiscal/legal vinculante.
+ 
+ ---
+ 
+@@ -255,7 +255,7 @@ Awareness (X, YouTube, podcast, maratones)
+ | Lightning | Sats vía WebLN | Alternativa a Mercado Pago |
+ 
+ - **retirobtc.mx NO custodia** Bitcoin ni fondos de usuarios
+-- **Rito** (agente IA): soporte educativo; no presión de ventas agresiva
++- **Rita** (agente IA): soporte educativo; no presión de ventas agresiva
+ - **Aureo:** enlace para comprar BTC (partner), no competidor directo
+ 
+ ---
+diff --git a/docs/product-brief.md b/docs/product-brief.md
+index c89f870..08e175a 100644
+--- a/docs/product-brief.md
++++ b/docs/product-brief.md
+@@ -182,4 +182,4 @@ Monetización secundaria futura: alianzas educativas (Casa Satoshi), federacione
+ 5. `content: sección Guardianes en brújula o help`
+ 6. `feat: Nostr badge compartible (sin PII)`
+ 7. `growth: UTM + tracking embudo brújula → calc → premium`
+-8. ~~`infra: servicio agentes IA Vertical 1 (Rito, leads, RAG, monitor DOF)`~~ ✅ — ver [`docs/agentes-ia-arquitectura.md`](./agentes-ia-arquitectura.md)
++8. ~~`infra: servicio agentes IA Vertical 1 (Rita, leads, RAG, monitor DOF)`~~ ✅ — ver [`docs/agentes-ia-arquitectura.md`](./agentes-ia-arquitectura.md)
+diff --git a/docs/roadmap-agentico-ingresos.md b/docs/roadmap-agentico-ingresos.md
+index e759857..f926b46 100644
+--- a/docs/roadmap-agentico-ingresos.md
++++ b/docs/roadmap-agentico-ingresos.md
+@@ -14,7 +14,7 @@ El diseño no es un "superbot", sino agentes especializados conectados por flujo
+ ```mermaid
+ flowchart TB
+   subgraph v1 [Vertical 1 - Front-Office]
+-    Rito["Rito<br/>soporte y onboarding 24/7"]
++    Rita["Rita<br/>soporte y onboarding 24/7"]
+     Legal["Investigador juridico<br/>monitor DOF"]
+     Content["Generador de contenido<br/>X / TikTok / SEO"]
+   end
+@@ -27,15 +27,15 @@ flowchart TB
+     Invoice["Facturacion CFDI<br/>y conciliacion"]
+   end
+   Legal --> Content
+-  Legal --> Rito
++  Legal --> Rita
+   Content --> Prospect
+-  Prospect --> Rito
+-  Rito --> Sales
++  Prospect --> Rita
++  Rita --> Sales
+   Sales --> Invoice
+   Invoice --> Books
+ ```
+ 
+-**Embudo autónomo previsto:** descarga de guía → prospección califica → contenido nutre por correo → Rito resuelve dudas 24/7 → ventas ofrece la cold wallet adecuada → facturación timbra el CFDI y contabilidad consolida.
++**Embudo autónomo previsto:** descarga de guía → prospección califica → contenido nutre por correo → Rita resuelve dudas 24/7 → ventas ofrece la cold wallet adecuada → facturación timbra el CFDI y contabilidad consolida.
+ 
+ ---
+ 
+@@ -45,7 +45,7 @@ flowchart TB
+ 
+ | Agente | Vertical | Implementación |
+ |--------|----------|----------------|
+-| **Rito** | 1 | [`agents/app/api/chat/route.ts`](../agents/app/api/chat/route.ts) + RAG pgvector + widget en landing, calc y brújula |
++| **Rita** | 1 | [`agents/app/api/chat/route.ts`](../agents/app/api/chat/route.ts) + RAG pgvector + widget en landing, calc y brújula |
+ | **Investigador jurídico** | 1 | [`agents/app/api/cron/legal-monitor/route.ts`](../agents/app/api/cron/legal-monitor/route.ts) → `legal_alerts` → revisión humana en `/admin/alerts` |
+ | **Captura de leads** | 1 | [`agents/app/api/leads/route.ts`](../agents/app/api/leads/route.ts) + Resend + token de guía |
+ | **Cobro Premium** | — | [`api/create-preference.js`](../api/create-preference.js) (MXN) y [`api/create-invoice.js`](../api/create-invoice.js) (Lightning) |
+@@ -188,7 +188,7 @@ La tasa de conversión es una aproximación, no una cohorte estricta: un lead ca
+ 
+ ### Nota de privacidad
+ 
+-`purchases` no guarda correo, datos de tarjeta ni montos de ahorro del usuario, en línea con la política de Rito. El correo del pagador se usa en memoria sólo para resolver el `lead_id` y no se persiste. Se almacena únicamente el importe cobrado, el plan y la atribución.
++`purchases` no guarda correo, datos de tarjeta ni montos de ahorro del usuario, en línea con la política de Rita. El correo del pagador se usa en memoria sólo para resolver el `lead_id` y no se persiste. Se almacena únicamente el importe cobrado, el plan y la atribución.
+ 
+ ### Activación operativa pendiente
+ 
+@@ -214,7 +214,7 @@ Un pago de prueba en cada rail aparece en `purchases` una sola vez, y `/api/admi
+ 
+ **Objetivo:** convertir el trabajo del investigador jurídico en tráfico recurrente hacia `/brujula` y `/calc`.
+ 
+-Es el eslabón que hoy más se nota ausente: la cuenta de X de Rito y el banner en `assets/rito-x-banner-1500x500.png` existen, pero nada los alimenta.
++Es el eslabón que hoy más se nota ausente: la cuenta de X de Rita y el banner en `assets/rito-x-banner-1500x500.png` existen, pero nada los alimenta.
+ 
+ ### Componentes
+ 
+@@ -239,7 +239,7 @@ Datos verificados (agosto 2026):
+ **RelateSocial de Namecheap** (~$9.88 USD/mes, suscripción cancelada por falta de fondos en agosto 2026). No se repone. Motivos:
+ 
+ 1. **No expone API pública.** Es un dashboard de uso manual, así que no puede recibir los borradores del agente: habría que copiar y pegar cada pieza, lo que anula el motivo de automatizar.
+-2. **Duplica IA que ya existe.** Su asistente genera posts e imágenes, pero sin contexto del producto. El servicio en `agents/` ya usa Gemini con RAG sobre la base de conocimiento propia y el system prompt de Rito.
++2. **Duplica IA que ya existe.** Su asistente genera posts e imágenes, pero sin contexto del producto. El servicio en `agents/` ya usa Gemini con RAG sobre la base de conocimiento propia y el system prompt de Rita.
+ 3. **Riesgo de cumplimiento.** Una IA de marketing genérica no aplica las reglas de [`guia-marca-tono-claude.md`](./guia-marca-tono-claude.md): no inyecta el disclaimer ni evita el hype, que es justo lo prohibido al hablar de rendimientos.
+ 
+ ### Reglas de contenido obligatorias
+@@ -328,7 +328,7 @@ Va al final porque depende de que exista volumen real de transacciones en P0 y P
+ 
+ ### Seguridad
+ 
+-Los agentes de back-office manejan datos fiscales y financieros de la empresa. Deben operar con credenciales separadas de las de Rito y sin exponer esos datos al contexto del chat público.
++Los agentes de back-office manejan datos fiscales y financieros de la empresa. Deben operar con credenciales separadas de las de Rita y sin exponer esos datos al contexto del chat público.
+ 
+ ---
+ 
+@@ -336,7 +336,7 @@ Los agentes de back-office manejan datos fiscales y financieros de la empresa. D
+ 
+ **P0 implementada; sigue P1.**
+ 
+-P0 era la fase más pequeña de todo el roadmap y desbloquea la medición de las tres siguientes. Falta su activación operativa (schema y variables de entorno). P1 aprovecha que la cuenta de X de Rito ya está creada y sin contenido.
++P0 era la fase más pequeña de todo el roadmap y desbloquea la medición de las tres siguientes. Falta su activación operativa (schema y variables de entorno). P1 aprovecha que la cuenta de X de Rita ya está creada y sin contenido.
+ 
+ P2 entra cuando haya suficiente historial de atribución para que el scoring se valide contra conversiones reales, no contra intuición.
+ 
+diff --git a/script.js b/script.js
+index beff2c8..f6f91c9 100644
+--- a/script.js
++++ b/script.js
+@@ -173,7 +173,7 @@
+       help_g_swr: '<strong>SWR:</strong> Safe Withdrawal Rate — regla orientativa de retiros anuales sostenibles (clásicamente ~4%).',
+       help_g_inflation: '<strong>Inflación:</strong> la pérdida de poder adquisitivo de una moneda con el tiempo.',
+       help_g_fedi: '<strong>Fedi:</strong> plataforma comunitaria de Bitcoin con wallets y mini apps.',
+-      help_v2_note: 'Usa el botón Rito (esquina inferior derecha) para resolver dudas al instante sobre la calculadora, Fedi y retiro en México.',
++      help_v2_note: 'Usa el botón Rita (esquina inferior derecha) para resolver dudas al instante sobre la calculadora, Fedi y retiro en México.',
+       footer_made: 'Hecho con ₿ para la comunidad',
+       footer_disclaimer: 'Los cálculos son proyecciones educativas, no asesoría financiera.',
+       footer_nav_aria: 'Enlaces del sitio',
+@@ -389,7 +389,7 @@
+       help_g_swr: '<strong>SWR:</strong> Safe Withdrawal Rate — rule of thumb for sustainable yearly withdrawals (often quoted around 4%).',
+       help_g_inflation: '<strong>Inflation:</strong> the loss of purchasing power of a currency over time.',
+       help_g_fedi: '<strong>Fedi:</strong> community Bitcoin platform with wallets and mini apps.',
+-      help_v2_note: 'Use the Rito button (bottom-right) for instant help about the calculator, Fedi, and retirement planning in Mexico.',
++      help_v2_note: 'Use the Rita button (bottom-right) for instant help about the calculator, Fedi, and retirement planning in Mexico.',
+       footer_made: 'Made with ₿ for the',
+       footer_disclaimer: 'Calculations are educational projections, not financial advice.',
+       footer_nav_aria: 'Site links',
+@@ -605,7 +605,7 @@
+       help_g_swr: '<strong>SWR:</strong> Safe Withdrawal Rate — orientação sobre retiradas anuais sustentáveis (na prática ~4% ao ano).',
+       help_g_inflation: '<strong>Inflação:</strong> a perda de poder de compra de uma moeda ao longo do tempo.',
+       help_g_fedi: '<strong>Fedi:</strong> plataforma comunitária de Bitcoin com wallets e mini apps.',
+-      help_v2_note: 'Use o botão Rito (canto inferior direito) para tirar dúvidas sobre a calculadora, Fedi e aposentadoria no México.',
++      help_v2_note: 'Use o botão Rita (canto inferior direito) para tirar dúvidas sobre a calculadora, Fedi e aposentadoria no México.',
+       footer_made: 'Feito com ₿ para a comunidade',
+       footer_disclaimer: 'Os cálculos são projeções educacionais, não assessoria financeira.',
+       footer_nav_aria: 'Links do site',
+@@ -821,7 +821,7 @@
+       help_g_swr: '<strong>SWR :</strong> Safe Withdrawal Rate — principe indicatif de retraits annuels durables (souvent ~4 % par an).',
+       help_g_inflation: '<strong>Inflation :</strong> la perte de pouvoir d\'achat d\'une monnaie au fil du temps.',
+       help_g_fedi: '<strong>Fedi :</strong> plateforme communautaire Bitcoin avec wallets et mini apps.',
+-      help_v2_note: 'Utilisez le bouton Rito (en bas à droite) pour vos questions sur la calculatrice, Fedi et la retraite au Mexique.',
++      help_v2_note: 'Utilisez le bouton Rita (en bas à droite) pour vos questions sur la calculatrice, Fedi et la retraite au Mexique.',
+       footer_made: 'Fait avec ₿ pour la communauté',
+       footer_disclaimer: 'Les calculs sont des projections éducatives, pas des conseils financiers.',
+       footer_nav_aria: 'Liens du site',
+-- 
+2.43.0
+
