@@ -129,15 +129,18 @@ violencia económica, "no me alcanza para ahorrar", negociar el tiempo de cuidad
 
 ### Cómo se combinan
 
-| Pilar | Etapa | Peso sugerido |
-|-------|-------|---------------|
-| 1 · La brecha con número | Adquisición | 30% |
-| 2 · Retiro sin nómina | Consideración | 30% |
-| 3 · Soberanía y custodia | Confianza | 20% |
-| 4 · Autonomía en la vida real | Comunidad | 20% |
-
 El pilar 4 abre la puerta, el 1 pone la cifra, el 2 enseña el cómo y el 3 elimina la objeción.
 Publicar solo el 1 quema a la audiencia; publicar solo el 4 no convierte nada.
+
+La mezcla no es fija: depende de la fase. En régimen los cuatro se equilibran, pero el arranque
+se ordena por **costo de producción**, no por importancia (ver §5).
+
+| Pilar | Etapa | Semanas 1–6 | Semana 7 en adelante |
+|-------|-------|-------------|----------------------|
+| 1 · La brecha con número | Adquisición | 40% | 30% |
+| 4 · Autonomía en la vida real | Comunidad | 40% | 20% |
+| 3 · Soberanía y custodia | Confianza | 20%, solo FAQ reactivas | 20% |
+| 2 · Retiro sin nómina | Consideración | — | 30% |
 
 ## 4. Regla sobre datos
 
@@ -145,3 +148,126 @@ La única cifra que Rita presenta como propia es **la que produce la calculadora
 como estimación. Cualquier dato agregado sobre brecha pensional, longevidad o semanas cotizadas se
 cita con fuente (CONSAR, INEGI, CONEVAL, OCDE) o no se publica. Un dato inventado rompe §6.9 y es el
 error más fácil de cometer en contenido.
+
+---
+
+## 5. Plan de arranque con capacidad manual reducida
+
+La restricción que ordena todo el arranque no es la estrategia, es **cuánto se puede producir sin
+teclear ni investigar**. Por eso la secuencia se define por costo de producción.
+
+### Secuencia por fase
+
+**Semanas 1–6 — pilares 1 y 4, más el 3 en modo reactivo.**
+
+Los tres se pueden producir **hablando**:
+
+- **Pilar 1** sale directo de la calculadora. El guion es la pantalla: se narra el resultado. No
+  requiere investigación porque la cifra la produce la herramienta.
+- **Pilar 4** sale de las conversaciones. El material es testimonial, no documental.
+- **Pilar 3** entra solo como **FAQ cortas y reactivas**: responde objeciones que ya salieron en las
+  llamadas o en comentarios, con las palabras de quien las dijo. No se planea, se cosecha. Es el
+  pilar que baja la desconfianza hacia MXNB y Aureo, y por eso no puede esperar hasta la semana 7
+  aunque su volumen sea bajo.
+
+**Semana 7 en adelante — entra el pilar 2.**
+
+Es el que exige más rigor fiscal (RESICO frente a Sueldos y Salarios, qué es deducible y qué no) y
+por tanto más verificación: es exactamente el trabajo que no se puede hacer hablando. Mientras
+tanto sí se **dictan los esquemas** en la sesión semanal y se acumulan sin publicar, para validarlos
+después contra fuente o con un contador. Publicar el pilar 2 sin verificar es la vía más rápida a un
+error fiscal con nombre y apellido, y choca de frente con §6.3 y §7 (escenario 4) del `SOUL.md`.
+
+### Canal
+
+**Un solo canal orgánico para la audiencia primaria: Instagram.** Es donde ya está el
+[playbook de Unlock](./unlock-instagram-playbook.md) y donde vive el público de los cuatro
+arquetipos. La segunda audiencia (RH y colectivos) va por LinkedIn y one-pager, y **queda en
+fase 2**: exige otro registro, otro calendario y material de venta que hoy no existe.
+
+Formato consecuente con producción por voz: **Reel o video vertical como default**. El carrusel
+solo cuando la captura de la calculadora carga la pieza sola, porque diseñar carrusel es
+justamente el trabajo manual que se está evitando.
+
+### La conversación como motor
+
+**5 a 8 llamadas con mujeres del núcleo** (la que pausó y la independiente). Una sola llamada rinde
+tres cosas a la vez, y por eso es la actividad de mayor retorno del arranque:
+
+1. **Material para el pilar 4** — historias reales en sus propias palabras.
+2. **Cifras para el pilar 1** — sus años de pausa y su aportación posible, corridos en la calculadora.
+3. **Las primeras usuarias** — usan el producto durante la llamada, acompañadas.
+
+Y un cuarto subproducto que no se debe desperdiciar: **ver dónde se detiene** al usar la calculadora
+es investigación de producto que ninguna métrica va a dar.
+
+Reclutamiento: contactos de Unlock, y al cierre de cada llamada se piden dos referidas. Con snowball,
+5 llamadas alcanzan para 8.
+
+#### Guion de llamada (35–40 min)
+
+| Bloque | Min | Qué se busca | Alimenta |
+|--------|-----|--------------|----------|
+| Apertura | 2 | Esto no es una venta. Permiso para grabar. | — |
+| Trayectoria | 10 | Vida laboral, dónde hubo pausas y por qué, cómo se sostuvo. | Pilar 4 + años de pausa |
+| Estado actual | 5 | Régimen fiscal, si sabe qué tiene en su AFORE, si ha intentado revisarlo. | Pilar 2 (dictado) |
+| Calculadora en vivo | 10 | Que la use **ella** y narre en voz alta. Su reacción a la cifra. | Pilar 1 + producto |
+| Objeciones | 8 | Reacción espontánea a MXNB, CETES, Bitcoin y Aureo. | Pilar 3 |
+| Cierre | 5 | Qué haría ahora. Consentimiento. Dos referidas. | — |
+
+#### Consentimiento (requisito duro, no cortesía)
+
+El pilar 4 toca pareja, divorcio y violencia económica. Publicar eso sin permiso explícito es un
+daño real, no un riesgo de marca. Al cierre de cada llamada se pregunta y se registra el nivel:
+
+| Nivel | Permite |
+|-------|---------|
+| A | Cita textual con su nombre |
+| B | Cita textual anónima |
+| C | Solo el patrón agregado, sin cita |
+| D | Nada — la llamada solo informa el producto |
+
+Por defecto se asume **C**. Antes de publicar cualquier pieza con material sensible se vuelve a
+confirmar con ella, ya viendo la pieza. Si no responde, no se publica.
+
+### Sesión semanal de lote
+
+Una sesión de **20–30 minutos de audio** por semana produce **2 o 3 piezas**. Para que ese audio sea
+convertible y no divagación, cada pieza necesita cuatro cosas dictadas de corrido:
+
+1. **El punto** — una sola idea. Si son dos, son dos piezas.
+2. **El ancla** — la cifra de la calculadora, o la historia con su nivel de consentimiento.
+3. **La pregunta de cierre** — lo que se le pregunta a la comunidad.
+4. **El pilar** — 1, 3 o 4.
+
+Más un cajón aparte al final del audio: **"datos que creo recordar"**. Todo lo que suene a
+estadística y no venga de la calculadora se dicta ahí y **no** entra a ninguna pieza hasta tener
+fuente (§4).
+
+Lo que se devuelve por cada lote:
+
+- Las 2–3 piezas con caption, texto en pantalla y pregunta de cierre, en el léxico de §5 del `SOUL.md`.
+- La lista de **datos por verificar**, separada, con la fuente candidata de cada uno.
+- Las filas del tracker.
+- Los esquemas del pilar 2 acumulados, marcados como no publicables.
+
+### Tracker de llamadas
+
+| # | Fecha | Arquetipo | Años de pausa | Brecha calculada | Consentimiento | Objeción principal | Referidas |
+|---|-------|-----------|---------------|------------------|----------------|--------------------|-----------|
+| 1 | | pausó / independiente | | | A / B / C / D | | |
+| 2 | | | | | C | | |
+| 3 | | | | | C | | |
+| 4 | | | | | C | | |
+| 5 | | | | | C | | |
+| 6 | | | | | C | | |
+| 7 | | | | | C | | |
+| 8 | | | | | C | | |
+
+La columna de objeción principal es la que alimenta el pilar 3: cada objeción repetida dos veces se
+convierte en una FAQ corta.
+
+### Qué queda fuera del arranque
+
+Segunda audiencia B2B2C y LinkedIn, pilar 2 publicado, carruseles de diseño, segundo canal orgánico
+y cualquier pieza cuyo dato no venga de la calculadora o de una fuente citable.
