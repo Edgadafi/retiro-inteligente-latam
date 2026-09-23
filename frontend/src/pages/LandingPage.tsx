@@ -15,9 +15,10 @@ import { CompassIcon } from "../components/ui/CompassIcon";
 
 interface Props {
   onStartDemo: () => void;
+  onOpenRita?: () => void;
 }
 
-export function LandingPage({ onStartDemo }: Props) {
+export function LandingPage({ onStartDemo, onOpenRita }: Props) {
   const [hackathonMode, setHackathonMode] = useState(false);
   const [demoModalOpen, setDemoModalOpen] = useState(false);
 
@@ -38,7 +39,18 @@ export function LandingPage({ onStartDemo }: Props) {
               </p>
             </div>
           </div>
-          <HackathonModeToggle enabled={hackathonMode} onChange={setHackathonMode} />
+          <div className="flex items-center gap-2 shrink-0">
+            {onOpenRita && (
+              <button
+                type="button"
+                onClick={onOpenRita}
+                className="cursor-pointer text-[10px] sm:text-xs text-rito-amber hover:text-rito-frost border border-rito-amber/40 hover:border-rito-amber px-2.5 sm:px-3 py-1.5 rounded-full transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rito-amber"
+              >
+                Rita
+              </button>
+            )}
+            <HackathonModeToggle enabled={hackathonMode} onChange={setHackathonMode} />
+          </div>
         </div>
       </header>
 
@@ -86,10 +98,19 @@ export function LandingPage({ onStartDemo }: Props) {
                 <button
                   type="button"
                   onClick={onStartDemo}
-                  className="w-full sm:w-auto bg-rito-amber hover:bg-rito-amber-d text-rito-night font-display font-semibold px-8 py-4 rounded-2xl transition-colors shadow-lg shadow-rito-amber/20"
+                  className="w-full sm:w-auto bg-rito-amber hover:bg-rito-amber-d text-rito-night font-display font-semibold px-8 py-4 rounded-2xl transition-colors shadow-lg shadow-rito-amber/20 cursor-pointer"
                 >
                   Probar el demo
                 </button>
+                {onOpenRita && (
+                  <button
+                    type="button"
+                    onClick={onOpenRita}
+                    className="cursor-pointer block mx-auto text-sm text-rito-compass hover:text-rito-frost underline-offset-4 hover:underline transition-colors"
+                  >
+                    Rita — retiro para mujeres
+                  </button>
+                )}
               </div>
             </section>
           </motion.div>

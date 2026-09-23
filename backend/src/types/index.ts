@@ -21,3 +21,24 @@ export interface RetirementProjection {
   periods: number;
   contributionPerPeriod: number;
 }
+
+export interface GenderGapProjection {
+  inputs: {
+    currentAge: number;
+    weeklyContribution: number;
+    carePauseYears: number;
+    horizonYears: number;
+    wageGapFactor: number;
+    contributingYears: number;
+  };
+  ritaCetes: RetirementProjection;
+  ritaAfore: RetirementProjection;
+  counterfactual: RetirementProjection;
+  gapMxn: number;
+  weeklyToCloseGap: number | null;
+  extraRetirementYears: number;
+  annualDrawdownRita: number;
+  annualDrawdownCounterfactual: number;
+  incomeGapMxn: number;
+  disclaimer: string;
+}

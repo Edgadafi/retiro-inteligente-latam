@@ -1,5 +1,11 @@
 import OpenAI from "openai";
 import { agentConfig } from "../config/agent.config.js";
+import {
+  getPersonaPrompt,
+  isToolAllowedForPersona,
+  resolvePersona,
+  type AgentPersona,
+} from "../config/agent-personas.js";
 import { env } from "../config/env.js";
 import {
   executeTool,
@@ -11,6 +17,7 @@ import {
   isOpenAIQuotaError,
   runAgentChatSandbox,
 } from "./agent-chat-sandbox.service.js";
+import { applyPersonaOutputPolicy } from "./persona-output-policy.js";
 
 const openaiTools: OpenAI.Chat.Completions.ChatCompletionTool[] = [
   {
@@ -104,6 +111,27 @@ const openaiTools: OpenAI.Chat.Completions.ChatCompletionTool[] = [
   {
     type: "function",
     function: {
+      name: "project_gender_gap",
+      description:
+        "Estima brecha pensional de género: pausas por cuidados, brecha salarial y mayor longevidad.",
+      parameters: {
+        type: "object",
+        properties: {
+          currentAge: { type: "number" },
+          weeklyContribution: { type: "number" },
+          carePauseYears: { type: "number" },
+          horizonYears: { type: "number" },
+          wageGapFactor: { type: "number" },
+          annualRate: { type: "number" },
+        },
+        required: ["currentAge", "weeklyContribution"],
+        additionalProperties: false,
+      },
+    },
+  },
+  {
+    type: "function",
+    function: {
       name: "get_savings_plan",
       description: "Obtiene plan de ahorro y CLABE SPEI del usuario.",
       parameters: {
@@ -154,21 +182,27 @@ export interface AgentChatResponse {
 export async function runAgentChat(params: {
   messages: ChatMessage[];
   userId?: string;
+  persona?: AgentPersona;
 }): Promise<AgentChatResponse> {
+  const persona = resolvePersona(params.persona);
   if (env.AGENT_CHAT_SANDBOX_MODE) {
-    return runAgentChatSandbox(params);
+    return runAgentChatSandbox({ ...params, persona });
   }
 
   if (!env.OPENAI_API_KEY) {
-    return runAgentChatSandbox(params);
+    return runAgentChatSandbox({ ...params, persona });
   }
 
   const client = new OpenAI({ apiKey: env.OPENAI_API_KEY });
   const toolCallsLog: Array<{ name: string; result: string }> = [];
+  const systemPrompt = getPersonaPrompt(persona);
+  const personaTools = openaiTools.filter(
+    (t) => t.type === "function" && isToolAllowedForPersona(persona, t.function.name),
+  );
 
   const systemWithUser = params.userId
-    ? `${agentConfig.systemPrompt}\n\nUsuario activo: ${params.userId}`
-    : agentConfig.systemPrompt;
+    ? `${systemPrompt}\n\nUsuario activo: ${params.userId}`
+    : systemPrompt;
 
   const conversation: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
     { role: "system", content: systemWithUser },
@@ -188,13 +222,13 @@ export async function runAgentChat(params: {
         temperature: agentConfig.model.temperature,
         max_tokens: agentConfig.model.maxTokens,
         messages: conversation,
-        tools: openaiTools,
+        tools: personaTools,
         tool_choice: "auto",
       });
     } catch (error) {
       if (isOpenAIQuotaError(error)) {
-        console.warn("[Agent] OpenAI quota 429 — fallback a sandbox Rito");
-        return runAgentChatSandbox(params);
+        console.warn("[Agent] OpenAI quota 429 — fallback a sandbox");
+        return runAgentChatSandbox({ ...params, persona });
       }
       throw error;
     }
@@ -209,7 +243,7 @@ export async function runAgentChat(params: {
     const toolCalls = choice.message.tool_calls;
     if (!toolCalls?.length) {
       return {
-        message: choice.message.content ?? "",
+        message: applyPersonaOutputPolicy(persona, choice.message.content ?? ""),
         toolCalls: toolCallsLog.length ? toolCallsLog : undefined,
       };
     }
@@ -231,8 +265,12 @@ export async function runAgentChat(params: {
         args.createIfMissing = true;
       }
 
-      const result =
-        name in toolHandlers
+      const result = !isToolAllowedForPersona(persona, name)
+        ? {
+            success: false,
+            error: `La persona ${persona} no tiene permitida la herramienta ${name}.`,
+          }
+        : name in toolHandlers
           ? await executeTool(name, args)
           : { success: false, error: `Tool no registrada: ${name}` };
 
