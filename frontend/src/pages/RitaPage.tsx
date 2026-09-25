@@ -52,9 +52,9 @@ export function RitaPage({ onBack }: Props) {
           <GenderGapCalculator />
           <Onboarding userId="demo-rita-001" />
           <AgentChat
-            persona="rita"
             userId="demo-rita-001"
             title="Rita — tu brújula"
+            subtitle="Chat con Rita: brecha pensional, pausas por cuidados y ahorro vía SPEI. El monedero sigue en TEE."
             starters={RITA_STARTERS}
           />
         </div>

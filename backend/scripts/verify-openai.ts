@@ -1,5 +1,5 @@
 /**
- * Verifica conectividad con OpenAI para el chat de Rito.
+ * Verifica conectividad con OpenAI para el chat de Rita.
  * Uso: npm run verify:openai -w backend
  */
 import OpenAI from "openai";
@@ -32,7 +32,7 @@ function explainOpenAIError(error: unknown): void {
     console.error("   3. Verifica límites en https://platform.openai.com/settings/organization/limits");
     console.error("\n   Mientras tanto, el chat funciona en modo sandbox:");
     console.error("   AGENT_CHAT_SANDBOX_MODE=true  (en .env)");
-    console.error("   npm run dev  →  Rito responde con reglas + tools MCP sin OpenAI");
+    console.error("   npm run dev  →  Rita responde con reglas + tools MCP sin OpenAI");
     return;
   }
 
@@ -48,7 +48,7 @@ function explainOpenAIError(error: unknown): void {
 async function main() {
   if (sandbox) {
     console.log("ℹ️  AGENT_CHAT_SANDBOX_MODE=true — OpenAI no es obligatorio.");
-    console.log("   El chat usa Rito sandbox (reglas + MCP).");
+    console.log("   El chat usa Rita sandbox (reglas + MCP).");
     if (!apiKey) {
       console.log("✅ Config OK para demo sin OpenAI");
       return;
@@ -73,7 +73,7 @@ async function main() {
     const res = await client.chat.completions.create({
       model,
       max_tokens: 40,
-      messages: [{ role: "user", content: "Responde solo: Rito online" }],
+      messages: [{ role: "user", content: "Responde solo: Rita online" }],
     });
 
     const text = res.choices[0]?.message?.content?.trim();
@@ -89,7 +89,7 @@ async function main() {
     if (sandbox && isQuota) {
       console.warn("⚠️  OpenAI sin cuota (429) — billing pendiente.");
       explainOpenAIError(error);
-      console.log("\n✅ Demo OK: AGENT_CHAT_SANDBOX_MODE=true — el chat de Rito funciona sin OpenAI.");
+      console.log("\n✅ Demo OK: AGENT_CHAT_SANDBOX_MODE=true — el chat de Rita funciona sin OpenAI.");
       return;
     }
 

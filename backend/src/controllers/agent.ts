@@ -14,7 +14,8 @@ const chatSchema = z.object({
     )
     .min(1),
   userId: z.string().optional(),
-  persona: z.enum(["rito", "rita"]).optional(),
+  /** "rito" es el nombre anterior de la asistente; resuelve a "rita". */
+  persona: z.enum(["rita", "rito"]).optional(),
 });
 
 export async function postAgentChat(req: Request, res: Response): Promise<void> {

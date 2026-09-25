@@ -27,7 +27,7 @@ export function AppShell({ children }: AppShellProps) {
                 as="p"
                 className="text-xl sm:text-2xl text-rito-frost !text-[1.25rem] sm:!text-[1.5rem] !leading-tight"
               >
-                Rito
+                Rita
               </DisplayH1>
               <BodyText
                 as="p"

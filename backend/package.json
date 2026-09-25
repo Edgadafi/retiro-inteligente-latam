@@ -8,7 +8,7 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "lint": "tsc --noEmit",
-    "test": "tsx --test src/services/*.test.ts",
+    "test": "tsx --test src/services/*.test.ts src/config/*.test.ts",
     "mcp": "tsx src/mcp/stdio.ts",
     "verify:supabase": "tsx scripts/verify-supabase.ts",
     "verify:openai": "tsx scripts/verify-openai.ts",

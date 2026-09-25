@@ -32,7 +32,7 @@ export function LandingPage({ onStartDemo, onOpenRita }: Props) {
             <CompassIcon size={32} variant="dark" className="shrink-0" />
             <div className="min-w-0">
               <p className="font-display font-semibold text-sm text-rito-frost truncate">
-                Rito
+                Rita
               </p>
               <p className="text-[10px] text-rito-compass truncate hidden sm:block">
                 Retiro Inteligente LATAM

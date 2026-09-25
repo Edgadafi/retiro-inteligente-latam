@@ -1,5 +1,5 @@
 import { CONTRACTS, DAILY_SPENDING_LIMIT_MXNB } from "./contracts.js";
-import { ritoSystemPrompt } from "./agent-personas.js";
+import { ritaSystemPrompt } from "./agent-personas.js";
 
 /**
  * Configuración del Agente de IA — Retiro Inteligente LATAM
@@ -57,7 +57,7 @@ export const agentConfig = {
     rpcProtocol: "json-rpc-2.0",
   },
 
-  systemPrompt: ritoSystemPrompt,
+  systemPrompt: ritaSystemPrompt,
 } as const;
 
 export type AgentConfig = typeof agentConfig;

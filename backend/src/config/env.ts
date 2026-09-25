@@ -54,10 +54,10 @@ const envSchema = z.object({
   ARBITRUM_ONE_RPC_URL: optionalUrl,
 
   OPENAI_API_KEY: optionalString,
-  /** Modelo para chat del agente Rito (tool calling) */
+  /** Modelo para chat de la asistente Rita (tool calling) */
   OPENAI_MODEL: z.string().default("gpt-4o-mini"),
 
-  /** Chat Rito sin OpenAI (reglas + MCP) — útil si falta key o quota 429 */
+  /** Chat de Rita sin OpenAI (reglas + MCP) — útil si falta key o quota 429 */
   AGENT_CHAT_SANDBOX_MODE: z
     .preprocess(
       (v) => (v === "true" || v === "1" ? true : v === "false" || v === "0" ? false : v),
